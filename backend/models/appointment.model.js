@@ -33,17 +33,25 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    date: {
+    desiredDate: {
       type: Date,
-      required: true,
+      required: true, // This is the original date requested by the patient
+    },
+    scheduledDate: {
+      type: Date, // Optional; only set if the appointment is approved and rescheduled
     },
     concern: {
       type: String,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["Scheduled", "Unscheduled"], // Only these two statuses
+      default: "Unscheduled", // Default value for new appointments
+    },
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically add `createdAt` and `updatedAt` fields
   }
 );
 
