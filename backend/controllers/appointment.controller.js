@@ -56,7 +56,7 @@ export const createAppointments = async (req, res) => {
     course,
     desiredDate,
     concern,
-    status: status || "Scheduled", // Default to "Scheduled" for admin-created appointments
+    status: status || "Unscheduled", // Default to "Scheduled" for admin-created appointments
     scheduledDate, // Make sure scheduledDate is passed correctly
   });
 
