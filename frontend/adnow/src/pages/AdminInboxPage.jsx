@@ -263,16 +263,27 @@ function AdminInboxPage() {
                         onClick={() => openAppointmentDetails(appointment)}
                         style={{ cursor: "pointer" }}
                       />
-                      <Box>
+                      <Box textAlign="left" width="45%">
                         <Text
                           fontWeight="bold"
                           onClick={() => openAppointmentDetails(appointment)}
-                          style={{ cursor: "pointer" }}
+                          style={{ cursor: "pointer", marginBottom: "8px" }}
                         >
                           {appointment.firstName} {appointment.lastName}
                         </Text>
-                        <Text color="gray.500">{appointment.course}</Text>
-                        <Text color="gray.600" noOfLines={1} maxW="400px">
+                        <Text color="gray.500" mb={2}>
+                          {appointment.course}
+                        </Text>
+
+                        {/* Make sure the concern text wraps correctly */}
+                        <Text
+                          color="gray.600"
+                          noOfLines={2} // Set this to allow wrapping over multiple lines
+                          maxW="400px"
+                          whiteSpace="normal" // Allow wrapping for long text
+                          wordBreak="break-word" // Prevent long words from breaking the layout
+                          mb={2} // Add margin-bottom for spacing
+                        >
                           {appointment.concern}
                         </Text>
                       </Box>
@@ -294,7 +305,12 @@ function AdminInboxPage() {
                       >
                         Updated Appointment Date:
                       </Text>
-                      <Text fontSize="sm" color="gray.700">
+                      <Text
+                        fontSize="lg"
+                        fontWeight="semibold"
+                        color="blue.500" // Added blue color for emphasis
+                        mt={1}
+                      >
                         {appointment.scheduledDate
                           ? formatAppointmentDate(appointment.scheduledDate)
                           : "Not updated yet"}
@@ -321,7 +337,26 @@ function AdminInboxPage() {
                       <Flex justify="space-between" mt={4}>
                         <Button
                           as="a"
-                          href={`mailto:${appointment.email}`}
+                          href={`mailto:${
+                            appointment.gboxAcc
+                          }?subject=Appointment Confirmation&body=${
+                            !appointment.scheduledDate
+                              ? "We are sorry to inform you that your appointment cannot be scheduled at this time. Please contact us for alternative options."
+                              : appointment.scheduledDate ===
+                                appointment.desiredDate
+                              ? `Dear ${
+                                  appointment.firstName
+                                },\n\nYour appointment has been scheduled at: ${formatAppointmentDate(
+                                  appointment.scheduledDate
+                                )}.\nKindly confirm if you're available.`
+                              : `Dear ${
+                                  appointment.firstName
+                                },\n\nUnfortunately, the requested appointment date of ${formatAppointmentDate(
+                                  appointment.desiredDate
+                                )} is not available. However, we have scheduled your appointment for ${formatAppointmentDate(
+                                  appointment.scheduledDate
+                                )}. Please confirm if you're available.`
+                          }`}
                           leftIcon={<FaEnvelope />}
                           colorScheme="teal"
                           variant="solid"

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { Box, Flex, Spinner, Text, Select } from "@chakra-ui/react";
 import FullCalendar from "@fullcalendar/react";

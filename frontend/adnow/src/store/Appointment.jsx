@@ -10,7 +10,7 @@ export const useAppointment = create((set) => ({
       !newAppointment.firstName ||
       !newAppointment.gboxAcc ||
       !newAppointment.sex ||
-      !newAppointment.desiredDate || // Updated field
+      !newAppointment.desiredDate ||
       !newAppointment.concern
     ) {
       return { success: false, message: "Please fill in all fields." };
