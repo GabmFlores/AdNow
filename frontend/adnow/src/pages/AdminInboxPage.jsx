@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
 import {
   Box,
   Flex,
   Text,
-  Input,
   IconButton,
   Avatar,
   Tooltip,
@@ -24,10 +22,11 @@ import {
   Select,
   HStack,
 } from "@chakra-ui/react";
-import { FaSearch, FaEnvelope, FaCheck, FaTimes } from "react-icons/fa";
+import { FaEnvelope, FaCheck, FaTimes } from "react-icons/fa";
 import { useAppointment } from "../store/Appointment";
 import InboxSide from "../components/InboxSide";
 import AppointmentModal from "../components/AppointmentModal";
+import { useEffect, useState } from "react";
 
 function AdminInboxPage() {
   const {

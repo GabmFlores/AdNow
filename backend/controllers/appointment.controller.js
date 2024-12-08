@@ -25,6 +25,7 @@ export const createAppointments = async (req, res) => {
     course,
     desiredDate,
     concern,
+    status, // Capture status from frontend
   } = req.body;
 
   // Validate the required fields
@@ -42,6 +43,8 @@ export const createAppointments = async (req, res) => {
       .json({ success: false, message: "Please provide all fields" });
   }
 
+  const scheduledDate = req.body.scheduledDate || desiredDate;
+
   const newAppointment = new Appointment({
     firstName,
     lastName,
@@ -53,7 +56,8 @@ export const createAppointments = async (req, res) => {
     course,
     desiredDate,
     concern,
-    status: "Unscheduled",
+    status: status || "Scheduled", // Default to "Scheduled" for admin-created appointments
+    scheduledDate, // Make sure scheduledDate is passed correctly
   });
 
   try {

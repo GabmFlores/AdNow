@@ -6,13 +6,19 @@
     "dev": "nodemon backend/server.js"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
+    "@fullcalendar/timegrid": "^6.1.15",
     "bcrypt": "^5.1.1",
     "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "mongodb": "^6.11.0",
-    "mongoose": "^8.8.4"
+    "mongoose": "^8.8.4",
+    "prop-types": "^15.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

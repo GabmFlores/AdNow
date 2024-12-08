@@ -1,25 +1,27 @@
-// src/components/AppointSide.js
-import { Box, Button, Stack } from "@chakra-ui/react";
-import { FaInbox, FaCalendarAlt } from "react-icons/fa";
+import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react";
+import { FaInbox, FaCalendarAlt, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import CreateModalApp from "./CreateModalApp"; // Updated modal import
 
 function InboxSide() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box
       ml="100"
-      position="sticky" // Stick the sidebar to the top when scrolling
-      top="250px" // Offset from the top of the viewport
-      width="250" // Sidebar width
-      maxHeight="calc(100vh - 100px)" // Sidebar will not extend beyond the screen height minus the top offset
-      bg="teal.800" // Background color
-      color="white" // Text color
-      boxShadow="lg" // Shadow for 3D effect
-      p={4} // Adjusted padding for compact look
-      borderRadius="lg" // Rounded corners
-      display="flex" // Flexbox layout
-      flexDirection="column" // Arrange items vertically
-      justifyContent="flex-start" // Start aligning items from the top
-      alignItems="center" // Horizontally center items
+      position="sticky"
+      top="250px"
+      width="250"
+      maxHeight="calc(100vh - 100px)"
+      bg="teal.800"
+      color="white"
+      boxShadow="lg"
+      p={4}
+      borderRadius="lg"
+      display="flex"
+      flexDirection="column"
+      justifyContent="flex-start"
+      alignItems="center"
     >
       <Stack spacing={6} width="100%" align="center">
         <Link to="/inbox">
@@ -46,7 +48,21 @@ function InboxSide() {
             Calendar
           </Button>
         </Link>
+        {/* + New Button */}
+        <Button
+          onClick={onOpen}
+          leftIcon={<FaPlus />}
+          fontSize="20px"
+          bg="green.500"
+          color="white"
+          _hover={{ bg: "green.600" }}
+          width="100%"
+        >
+          New
+        </Button>
       </Stack>
+      {/* Modal for Creating Appointment */}
+      <CreateModalApp isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 }

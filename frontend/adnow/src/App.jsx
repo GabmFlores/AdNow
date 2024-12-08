@@ -11,6 +11,7 @@ import AdminInboxPage from "./pages/AdminInboxPage"; // Admin Inbox Page
 import Footer from "./components/Footer"; // Standard Footer
 import AdminFooter from "./components/AdminFooter"; // Admin Footer
 import PrivateRoute from "./store/PrivateRoute"; // Import PrivateRoute for admin route protection
+import CalendarPage from "./pages/CalendarPage";
 
 function App() {
   const { authenticatedUser } = useUsers(); // Zustand store (no need to check session in useEffect anymore)
@@ -43,6 +44,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <AdminInboxPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <PrivateRoute>
+                  <CalendarPage />
                 </PrivateRoute>
               }
             />
