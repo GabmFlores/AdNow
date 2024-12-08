@@ -21,13 +21,13 @@ import {
   FormLabel,
   Input as ChakraInput,
   useToast,
-  Select, // Import Select for dropdown
-  HStack, // Import HStack for horizontal stacking
+  Select,
+  HStack,
 } from "@chakra-ui/react";
 import { FaSearch, FaEnvelope, FaCheck, FaTimes } from "react-icons/fa";
-import { useAppointment } from "../store/Appointment"; // Import the Zustand store
-import InboxSide from "../components/InboxSide"; // Import the new InboxSide component
-import AppointmentModal from "../components/AppointmentModal"; // Import the AppointmentModal
+import { useAppointment } from "../store/Appointment";
+import InboxSide from "../components/InboxSide";
+import AppointmentModal from "../components/AppointmentModal";
 
 function AdminInboxPage() {
   const {
@@ -36,24 +36,31 @@ function AdminInboxPage() {
     updateAppointmentStatus,
     deleteAppointment,
   } = useAppointment();
-  const [selectedAppointments, setSelectedAppointments] = useState([]); // Track selected appointments
-  const [selectedAppointment, setSelectedAppointment] = useState(null); // State for selected appointment
-  const [isModalOpen, setIsModalOpen] = useState(false); // Custom state to control modal visibility
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control for confirmation dialogs
-  const [actionType, setActionType] = useState(""); // Track action type (approve/decline)
-  const [newAppointmentDate, setNewAppointmentDate] = useState(""); // For changing the appointment date
+  const [selectedAppointments, setSelectedAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const {
+    isOpen: isAppointmentModalOpen,
+    onOpen: onAppointmentModalOpen,
+    onClose: onAppointmentModalClose,
+  } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [actionType, setActionType] = useState("");
+  const [newAppointmentDate, setNewAppointmentDate] = useState("");
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
-    useState(false); // Track delete confirmation modal
+    useState(false);
+  const [filter, setFilter] = useState("All");
+  const toast = useToast();
 
-  const [filter, setFilter] = useState("All"); // New filter state
-  const toast = useToast(); // Initialize the toast hook
-
-  // Fetch appointments when component is mounted
   useEffect(() => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Function to format the date
+  // Handler to open appointment details modal
+  const openAppointmentDetails = (appointment) => {
+    setSelectedAppointment(appointment);
+    onAppointmentModalOpen();
+  };
+
   const formatAppointmentDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.toLocaleString("en-US", { weekday: "long" });
@@ -70,60 +77,52 @@ function AdminInboxPage() {
     return `${formattedDate} ${day} ${time}`;
   };
 
-  // Filter and sort appointments based on the selected filter
   const filteredAppointments = appointments
     .filter((appointment) => {
-      if (filter === "All") return true; // Show all appointments
-      if (filter === "Unscheduled" && !appointment.scheduledDate) return true; // Only unscheduled appointments
-      if (filter === "Scheduled" && appointment.scheduledDate) return true; // Only scheduled appointments
+      if (filter === "All") return true;
+      if (filter === "Unscheduled" && !appointment.scheduledDate) return true;
+      if (filter === "Scheduled" && appointment.scheduledDate) return true;
       return false;
     })
     .sort((a, b) => {
-      // Sorting: Latest appointment at the top, but scheduled ones go to the bottom
       const aDate = new Date(a.createdAt);
       const bDate = new Date(b.createdAt);
 
-      // If both appointments are scheduled, sort by scheduled date
       if (a.scheduledDate && b.scheduledDate) {
         return new Date(b.scheduledDate) - new Date(a.scheduledDate);
       }
 
-      // If one appointment is unscheduled and the other is scheduled, place unscheduled first
       if (a.scheduledDate && !b.scheduledDate) return 1;
       if (!a.scheduledDate && b.scheduledDate) return -1;
 
-      // Otherwise, sort by createdAt date
       return bDate - aDate;
     });
 
-  // Handle the approval of an appointment
   const handleApprove = (appointmentId) => {
     setActionType("Approve");
     const appointment = appointments.find(
       (appointment) => appointment._id === appointmentId
     );
     setSelectedAppointment(appointment);
-    setNewAppointmentDate(appointment.desiredDate); // Set initial date in the input
-    onOpen(); // Open confirmation modal for approval
+    setNewAppointmentDate(appointment.desiredDate);
+    onOpen();
   };
 
-  // Handle the decline of an appointment
   const handleDecline = (appointmentId) => {
     setActionType("Decline");
     const appointment = appointments.find(
       (appointment) => appointment._id === appointmentId
     );
     setSelectedAppointment(appointment);
-    onOpen(); // Open confirmation modal for decline
+    onOpen();
   };
 
-  // Handle the confirmation of approve action
   const handleApproveConfirm = () => {
     updateAppointmentStatus(
       selectedAppointment._id,
       "Scheduled",
       newAppointmentDate
-    ); // Update the date and status
+    );
     toast({
       title: "Appointment Approved.",
       description: "The appointment has been successfully approved.",
@@ -131,12 +130,11 @@ function AdminInboxPage() {
       duration: 4000,
       isClosable: true,
     });
-    onClose(); // Close modal after action
+    onClose();
   };
 
-  // Handle the confirmation of decline action
   const handleDeclineConfirm = () => {
-    deleteAppointment(selectedAppointment._id); // Delete the appointment
+    deleteAppointment(selectedAppointment._id);
     toast({
       title: "Appointment Declined.",
       description: "The appointment has been successfully declined.",
@@ -144,39 +142,32 @@ function AdminInboxPage() {
       duration: 4000,
       isClosable: true,
     });
-    onClose(); // Close modal after action
+    onClose();
   };
 
-  // Handle selecting or deselecting an appointment
   const handleSelectAppointment = (appointmentId) => {
     setSelectedAppointments((prevSelectedAppointments) => {
       if (prevSelectedAppointments.includes(appointmentId)) {
-        // Deselect the appointment
         return prevSelectedAppointments.filter((id) => id !== appointmentId);
       } else {
-        // Select the appointment
         return [...prevSelectedAppointments, appointmentId];
       }
     });
   };
 
-  // Handle selecting or deselecting all appointments based on the filter
   const handleSelectAll = () => {
     if (selectedAppointments.length === filteredAppointments.length) {
-      // Deselect all appointments
       setSelectedAppointments([]);
     } else {
-      // Select all appointments based on the current filter
       setSelectedAppointments(
         filteredAppointments.map((appointment) => appointment._id)
       );
     }
   };
 
-  // Handle confirming the deletion of selected appointments
   const handleDeleteConfirm = () => {
     selectedAppointments.forEach((appointmentId) => {
-      deleteAppointment(appointmentId); // Call deleteAppointment for each selected appointment
+      deleteAppointment(appointmentId);
       toast({
         title: "Appointment Deleted.",
         description: "The selected appointments have been deleted.",
@@ -185,36 +176,29 @@ function AdminInboxPage() {
         isClosable: true,
       });
     });
-    setSelectedAppointments([]); // Clear the selection after deletion
-    setIsDeleteConfirmationOpen(false); // Close the confirmation modal
+    setSelectedAppointments([]);
+    setIsDeleteConfirmationOpen(false);
   };
 
-  // Handle canceling the deletion of selected appointments
   const handleDeleteCancel = () => {
-    setIsDeleteConfirmationOpen(false); // Close the confirmation modal
+    setIsDeleteConfirmationOpen(false);
   };
 
-  // Open the confirmation modal when the delete button is clicked
   const handleDeleteSelected = () => {
     if (selectedAppointments.length > 0) {
-      setIsDeleteConfirmationOpen(true); // Open the confirmation modal
+      setIsDeleteConfirmationOpen(true);
     }
   };
 
   return (
     <Box bg="gray.50" minHeight="100vh">
-      {/* Main Flex Layout */}
       <Flex p={4} direction="row" height="100vh">
-        {/* Sidebar Component */}
         <Box width="300px" position="relative">
           <InboxSide />
         </Box>
 
-        {/* Main Content Area */}
         <Box mt={20} ml={6} flex="1" p={4} overflowY="auto">
-          {/* Header: Delete Selected, Select All, and Filter in same line using HStack */}
           <HStack justify="space-between" mb={4}>
-            {/* Delete Selected Button */}
             <HStack>
               <Button
                 colorScheme="red"
@@ -223,7 +207,6 @@ function AdminInboxPage() {
               >
                 Delete Selected
               </Button>
-              {/* Select All Checkbox */}
               <HStack spacing={2}>
                 <Checkbox
                   ml="8"
@@ -237,7 +220,6 @@ function AdminInboxPage() {
               </HStack>
             </HStack>
 
-            {/* Filter Dropdown */}
             <Select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -250,7 +232,6 @@ function AdminInboxPage() {
             </Select>
           </HStack>
 
-          {/* Appointment List */}
           <Box>
             {filteredAppointments.length > 0 ? (
               filteredAppointments.map((appointment) => (
@@ -276,14 +257,17 @@ function AdminInboxPage() {
                     </div>
 
                     <Flex align="center" width="45%">
-                      <Avatar name={appointment.firstName} size="sm" mr={3} />
+                      <Avatar
+                        name={appointment.firstName}
+                        size="sm"
+                        mr={3}
+                        onClick={() => openAppointmentDetails(appointment)}
+                        style={{ cursor: "pointer" }}
+                      />
                       <Box>
                         <Text
                           fontWeight="bold"
-                          onClick={() => {
-                            setSelectedAppointment(appointment);
-                            setIsModalOpen(true); // Open appointment modal when name is clicked
-                          }}
+                          onClick={() => openAppointmentDetails(appointment)}
                           style={{ cursor: "pointer" }}
                         >
                           {appointment.firstName} {appointment.lastName}
@@ -296,7 +280,6 @@ function AdminInboxPage() {
                     </Flex>
 
                     <Box textAlign="center" width="25%">
-                      {/* Desired Appointment Date */}
                       <Text fontWeight="bold" fontSize="sm" color="gray.500">
                         Desired Appointment Date:
                       </Text>
@@ -304,7 +287,6 @@ function AdminInboxPage() {
                         {formatAppointmentDate(appointment.desiredDate)}
                       </Text>
 
-                      {/* Updated Appointment Date */}
                       <Text
                         fontWeight="bold"
                         fontSize="sm"
@@ -450,6 +432,15 @@ function AdminInboxPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {/* Appointment Details Modal */}
+      {selectedAppointment && (
+        <AppointmentModal
+          isOpen={isAppointmentModalOpen}
+          onClose={onAppointmentModalClose}
+          appointment={selectedAppointment}
+        />
+      )}
     </Box>
   );
 }
