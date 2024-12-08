@@ -11,16 +11,38 @@ import {
   Box,
   Input,
   Button,
-  useToast, // Import useToast
+  Select,
+  Grid,
+  GridItem,
+  useToast,
 } from "@chakra-ui/react";
-import { useAppointment } from "../store/Appointment"; // Assuming Zustand store is in store/appointmentStore.js
+import { useAppointment } from "../store/Appointment";
+import { DateTime } from "luxon";
 
-function AppointmentModal({ isOpen, onClose, appointment }) {
+function AppointmentModal({
+  isOpen,
+  onClose,
+  appointment,
+  updateAppointmentStatus,
+}) {
   const { updateAppointment } = useAppointment();
   const [formData, setFormData] = useState({});
-  const toast = useToast(); // Initialize useToast
+  const toast = useToast();
 
-  // Set initial form data when appointment is passed in
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    return DateTime.fromISO(dateStr, { zone: "Asia/Manila" }).toFormat(
+      "yyyy-MM-dd'T'HH:mm"
+    );
+  };
+
+  const formatDateForDisplay = (dateStr) => {
+    if (!dateStr) return "";
+    return DateTime.fromISO(dateStr, { zone: "Asia/Manila" }).toLocaleString(
+      DateTime.DATETIME_MED
+    );
+  };
+
   useEffect(() => {
     if (appointment) {
       setFormData({
@@ -31,13 +53,17 @@ function AppointmentModal({ isOpen, onClose, appointment }) {
         gboxAcc: appointment.gboxAcc,
         course: appointment.course || "",
         concern: appointment.concern,
+        sex: appointment.sex || "",
+        department: appointment.department || "",
+        scheduledDate:
+          appointment.scheduledDate || appointment.desiredDate
+            ? formatDateForInput(appointment.scheduledDate)
+            : formatDateForInput(appointment.desiredDate),
         desiredDate: appointment.desiredDate,
-        createdAt: appointment.createdAt,
       });
     }
   }, [appointment]);
 
-  // Handle form input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -46,29 +72,15 @@ function AppointmentModal({ isOpen, onClose, appointment }) {
     }));
   };
 
-  // Check if data has changed
-  const isDataChanged = () => {
-    return (
-      formData.firstName !== appointment.firstName ||
-      formData.middleName !== appointment.middleName ||
-      formData.lastName !== appointment.lastName ||
-      formData.idNum !== appointment.idNum ||
-      formData.gboxAcc !== appointment.gboxAcc ||
-      formData.course !== appointment.course ||
-      formData.concern !== appointment.concern ||
-      formData.desiredDate !== appointment.desiredDate
-    );
-  };
-
-  // Handle form submit for updating the appointment
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if any data has changed before updating
-    if (!isDataChanged()) {
+    if (
+      JSON.stringify(formData) === JSON.stringify(appointment) // Check if data has changed
+    ) {
       toast({
-        title: "No changes made.",
-        description: "There were no changes to update.",
+        title: "No Changes Made",
+        description: "You have not made any changes to the appointment.",
         status: "info",
         duration: 3000,
         isClosable: true,
@@ -76,19 +88,45 @@ function AppointmentModal({ isOpen, onClose, appointment }) {
       return;
     }
 
+    // Update the appointment details first
     const response = await updateAppointment(appointment._id, formData);
+
     if (response.success) {
-      // Show success toast
+      // Now update the status to "Scheduled"
+      const statusResponse = await updateAppointmentStatus(
+        appointment._id,
+        "Scheduled",
+        formData.scheduledDate
+      );
+
+      if (statusResponse.success) {
+        toast({
+          title: "Appointment Updated",
+          description:
+            "The appointment details were updated and status set to Scheduled.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        onClose();
+      } else {
+        toast({
+          title: "Failed to Update Status",
+          description: "There was an error updating the appointment status.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } else {
       toast({
-        title: "Appointment updated.",
-        description: "The appointment has been updated successfully.",
-        status: "success",
-        duration: 5000,
+        title: "Update Failed",
+        description:
+          response.message || "There was an error updating the appointment.",
+        status: "error",
+        duration: 3000,
         isClosable: true,
       });
-      onClose(); // Close modal on successful update
-    } else {
-      alert(response.message); // Show error message if update fails
     }
   };
 
@@ -102,80 +140,108 @@ function AppointmentModal({ isOpen, onClose, appointment }) {
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit}>
-            <Box mb={4}>
-              <Text fontWeight="bold">Full Name:</Text>
-              <Input
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="First Name"
-                mb={2}
-              />
-              <Input
-                name="middleName"
-                value={formData.middleName}
-                onChange={handleChange}
-                placeholder="Middle Name (Optional)"
-                mb={2}
-              />
-              <Input
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Last Name"
-                mb={2}
-              />
-            </Box>
-            <Box mb={4}>
-              <Text fontWeight="bold">ID Number:</Text>
-              <Input
-                name="idNum"
-                value={formData.idNum}
-                onChange={handleChange}
-                placeholder="ID Number"
-                mb={2}
-              />
-            </Box>
-            <Box mb={4}>
-              <Text fontWeight="bold">GBox Account:</Text>
-              <Input
-                name="gboxAcc"
-                value={formData.gboxAcc}
-                onChange={handleChange}
-                placeholder="GBox Account"
-                mb={2}
-              />
-            </Box>
-            <Box mb={4}>
-              <Text fontWeight="bold">Course:</Text>
-              <Input
-                name="course"
-                value={formData.course}
-                onChange={handleChange}
-                placeholder="Course"
-                mb={2}
-              />
-            </Box>
-            <Box mb={4}>
-              <Text fontWeight="bold">Concern:</Text>
-              <Input
-                name="concern"
-                value={formData.concern}
-                onChange={handleChange}
-                placeholder="Concern"
-                mb={2}
-              />
-            </Box>
+            {/* Personal Information Fields */}
+            <Grid templateColumns="1fr 1fr" gap={4} mb={4}>
+              <GridItem>
+                <Text fontWeight="bold">Full Name:</Text>
+                <Input
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="First Name"
+                  mb={2}
+                />
+              </GridItem>
+              <GridItem>
+                <Text fontWeight="bold">Middle Name:</Text>
+                <Input
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleChange}
+                  placeholder="Middle Name (Optional)"
+                  mb={2}
+                />
+              </GridItem>
+              <GridItem colSpan={2}>
+                <Text fontWeight="bold">Last Name:</Text>
+                <Input
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Last Name"
+                  mb={2}
+                />
+              </GridItem>
+            </Grid>
+
+            {/* Other Details */}
+            <Grid templateColumns="1fr 1fr" gap={4} mb={4}>
+              <GridItem>
+                <Text fontWeight="bold">ID Number:</Text>
+                <Input
+                  name="idNum"
+                  value={formData.idNum}
+                  onChange={handleChange}
+                  placeholder="ID Number"
+                  mb={2}
+                />
+              </GridItem>
+              <GridItem>
+                <Text fontWeight="bold">GBox Account:</Text>
+                <Input
+                  name="gboxAcc"
+                  value={formData.gboxAcc}
+                  onChange={handleChange}
+                  placeholder="GBox Account"
+                  mb={2}
+                />
+              </GridItem>
+            </Grid>
+
+            {/* Sex and Concern */}
+            <Grid templateColumns="1fr 1fr" gap={4} mb={4}>
+              <GridItem>
+                <Text fontWeight="bold">Sex:</Text>
+                <Select
+                  name="sex"
+                  value={formData.sex}
+                  onChange={handleChange}
+                  mb={2}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </Select>
+              </GridItem>
+              <GridItem>
+                <Text fontWeight="bold">Concern:</Text>
+                <Input
+                  name="concern"
+                  value={formData.concern}
+                  onChange={handleChange}
+                  placeholder="Concern"
+                  mb={2}
+                />
+              </GridItem>
+            </Grid>
+
+            {/* Dates */}
             <Box mb={4}>
               <Text fontWeight="bold">Appointment Date:</Text>
+              <Text>{formatDateForDisplay(formData.desiredDate)}</Text>
+            </Box>
+
+            <Box mb={4}>
+              <Text fontWeight="bold">Scheduled Appointment Date:</Text>
               <Input
                 type="datetime-local"
-                name="desiredDate"
-                value={formData.desiredDate}
+                name="scheduledDate"
+                value={formData.scheduledDate}
                 onChange={handleChange}
                 mb={2}
               />
             </Box>
+
+            {/* Submit Button */}
             <Button colorScheme="blue" type="submit">
               Update Appointment
             </Button>
@@ -199,8 +265,12 @@ AppointmentModal.propTypes = {
     gboxAcc: PropTypes.string.isRequired,
     course: PropTypes.string,
     concern: PropTypes.string.isRequired,
+    sex: PropTypes.string.isRequired,
+    department: PropTypes.string,
     desiredDate: PropTypes.string.isRequired,
+    scheduledDate: PropTypes.string.isOptional,
     createdAt: PropTypes.string.isRequired,
+    updateAppointmentStatus: PropTypes.func.isRequired,
   }).isRequired,
 };
 

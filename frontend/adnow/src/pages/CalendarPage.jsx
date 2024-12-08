@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import { Box, Flex, Spinner, Text, Select } from "@chakra-ui/react";
 import FullCalendar from "@fullcalendar/react";
@@ -7,17 +6,20 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useAppointment } from "../store/Appointment";
 import InboxSide from "../components/InboxSide";
+import AppointmentModal from "../components/AppointmentModal"; // Import the Appointment Modal
 
 const CalendarPage = () => {
-  const { appointments, fetchAppointments } = useAppointment(); // Ensure fetchAppointments is exposed in your store
+  const { appointments, fetchAppointments } = useAppointment();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all"); // Add filter state
+  const [filter, setFilter] = useState("all");
+  const [selectedAppointment, setSelectedAppointment] = useState(null); // State to store the clicked appointment
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
   useEffect(() => {
     const loadAppointments = async () => {
       setLoading(true);
-      await fetchAppointments(); // Fetch data from the backend
+      await fetchAppointments();
       setLoading(false);
     };
 
@@ -25,7 +27,6 @@ const CalendarPage = () => {
   }, [fetchAppointments]);
 
   useEffect(() => {
-    // Filter appointments based on the selected filter
     const filteredAppointments = appointments.filter((appt) => {
       if (filter === "all") return true;
       return appt.status.toLowerCase() === filter.toLowerCase();
@@ -37,14 +38,23 @@ const CalendarPage = () => {
         appt.status === "Scheduled" ? appt.scheduledDate : appt.desiredDate
       ),
       allDay: false,
-      color: appt.status === "Scheduled" ? "#4CAF50" : "#FF9800", // Green for Scheduled, Orange for Unscheduled
+      color: appt.status === "Scheduled" ? "#4CAF50" : "#FF9800",
+      id: appt._id, // Adding the appointment ID to the event data
     }));
 
     setEvents(calendarEvents);
-  }, [appointments, filter]); // Depend on appointments and filter
+  }, [appointments, filter]);
 
   const handleFilterChange = (e) => {
-    setFilter(e.target.value); // Update filter state based on dropdown selection
+    setFilter(e.target.value);
+  };
+
+  const handleEventClick = (info) => {
+    const clickedAppointment = appointments.find(
+      (appt) => appt._id === info.event.id
+    );
+    setSelectedAppointment(clickedAppointment); // Set the selected appointment
+    setIsModalOpen(true); // Open the modal
   };
 
   if (loading) {
@@ -61,15 +71,12 @@ const CalendarPage = () => {
   return (
     <Box bg="gray.50" minHeight="100vh">
       <Flex p={4} direction="row" height="100vh">
-        {/* Sidebar */}
         <Box width="300px" position="relative">
           <InboxSide />
         </Box>
 
-        {/* Calendar */}
         <Box mt={20} ml={6} flex="1" p={4} overflowY="auto">
           <Flex mb={4}>
-            {/* Filter Dropdown */}
             <Select onChange={handleFilterChange} value={filter} width="200px">
               <option value="all">All</option>
               <option value="scheduled">Scheduled</option>
@@ -79,7 +86,7 @@ const CalendarPage = () => {
 
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth" // Set default view to "Month"
+            initialView="dayGridMonth"
             headerToolbar={{
               left: "prev,next today",
               center: "title",
@@ -88,9 +95,19 @@ const CalendarPage = () => {
             events={events}
             slotLabelInterval="4:00"
             height="calc(100vh - 120px)"
+            eventClick={handleEventClick} // Add eventClick handler
           />
         </Box>
       </Flex>
+
+      {/* Appointment Modal */}
+      {selectedAppointment && (
+        <AppointmentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          appointment={selectedAppointment}
+        />
+      )}
     </Box>
   );
 };

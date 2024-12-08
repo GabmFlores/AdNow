@@ -103,7 +103,21 @@ function AdminInboxPage() {
       (appointment) => appointment._id === appointmentId
     );
     setSelectedAppointment(appointment);
-    setNewAppointmentDate(appointment.desiredDate);
+
+    // Convert the desired date to local time
+    const localDate = new Date(appointment.desiredDate);
+
+    // Extract components of the local time
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(localDate.getDate()).padStart(2, "0");
+    const hours = String(localDate.getHours()).padStart(2, "0");
+    const minutes = String(localDate.getMinutes()).padStart(2, "0");
+
+    // Create a formatted string for the datetime-local input (YYYY-MM-DDTHH:MM)
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    setNewAppointmentDate(formattedDate); // Update the state with the local date and time
     onOpen();
   };
 
@@ -413,6 +427,7 @@ function AdminInboxPage() {
             {actionType === "Approve" ? (
               <FormControl>
                 <FormLabel>Desired Appointment Date</FormLabel>
+                {/* Ensure that the input is correctly initialized with the time */}
                 <ChakraInput
                   type="datetime-local"
                   value={newAppointmentDate}

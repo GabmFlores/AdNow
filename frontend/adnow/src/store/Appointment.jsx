@@ -16,12 +16,20 @@ export const useAppointment = create((set) => ({
       return { success: false, message: "Please fill in all fields." };
     }
 
+    // Format the desiredDate to ISO 8601 format
+    const formattedDesiredDate = new Date(
+      newAppointment.desiredDate
+    ).toISOString();
+
     const res = await fetch("/api/appointments", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newAppointment),
+      body: JSON.stringify({
+        ...newAppointment,
+        desiredDate: formattedDesiredDate, // Ensure the date is properly formatted
+      }),
     });
 
     const data = await res.json();
