@@ -38,7 +38,8 @@ const appointmentSchema = new mongoose.Schema(
       required: true, // This is the original date requested by the patient
     },
     scheduledDate: {
-      type: Date, // Optional; only set if the appointment is approved and rescheduled
+      type: Date,
+      default: "", // Optional; only set if the appointment is approved and rescheduled
     },
     concern: {
       type: String,

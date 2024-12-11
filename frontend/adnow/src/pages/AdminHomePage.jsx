@@ -6,7 +6,7 @@ import {
   FaFileAlt,
 } from "react-icons/fa"; // Import necessary icons
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { useNavigate, Link } from "react-router-dom"; // Import Link for routing
 import axios from "axios";
 import { useUsers } from "../store/User";
 
@@ -78,36 +78,144 @@ function AdminHomePage() {
             </Box>
             <Box display="flex" flexDirection="column" alignItems="flex-start">
               {/* Step 1 */}
-              <Box display="flex" alignItems="center" mb={6}>
-                <Icon as={FaUser} fontSize="30px" />
-                <Text color="gray.500" fontSize="sm" ml={4}>
-                  Setup Profile / Settings
-                </Text>
-              </Box>
+              <Link to="/settings">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  mb={6}
+                  p={4}
+                  borderRadius="lg"
+                  border="1px solid transparent" // Transparent border to add focus without affecting layout
+                  background="white" // Light background
+                  boxShadow="0 8px 20px rgba(0, 0, 0, 0.15)" // Stronger, more emphasized shadow
+                  cursor="pointer"
+                  transition="all 0.3s ease-in-out"
+                  _hover={{
+                    transform: "scale(1.08)", // Increased pop effect on hover
+                    boxShadow: "0 12px 25px rgba(0, 0, 0, 0.2)", // Emphasized shadow on hover
+                    borderColor: "teal.500", // Border color change
+                    borderWidth: "2px", // Increased border width on hover
+                  }}
+                  _focus={{
+                    outline: "none", // Remove outline on focus
+                    boxShadow: "0 0 0 3px rgba(0, 255, 255, 0.5)", // Highlight focus with teal
+                  }}
+                  _active={{
+                    transform: "scale(1.02)", // Slightly smaller scaling effect when active
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)", // Slightly stronger shadow when clicked
+                  }}
+                >
+                  <Icon as={FaUser} fontSize="30px" />
+                  <Text color="gray.500" fontSize="sm" ml={4}>
+                    Setup Profile / Settings
+                  </Text>
+                </Box>
+              </Link>
 
               {/* Step 2 */}
-              <Box display="flex" alignItems="center" mb={6}>
-                <Icon as={FaClipboardList} fontSize="30px" />
-                <Text color="gray.500" fontSize="sm" ml={4}>
-                  Add Patient Records
-                </Text>
-              </Box>
+              <Link to="/files">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  mb={6}
+                  p={4}
+                  borderRadius="lg"
+                  border="1px solid transparent" // Transparent border to add focus without affecting layout
+                  background="white" // Light background
+                  boxShadow="0 8px 20px rgba(0, 0, 0, 0.15)" // Stronger, more emphasized shadow
+                  cursor="pointer"
+                  transition="all 0.3s ease-in-out"
+                  _hover={{
+                    transform: "scale(1.08)", // Increased pop effect on hover
+                    boxShadow: "0 12px 25px rgba(0, 0, 0, 0.2)", // Emphasized shadow on hover
+                    borderColor: "teal.500", // Border color change
+                    borderWidth: "2px", // Increased border width on hover
+                  }}
+                  _focus={{
+                    outline: "none", // Remove outline on focus
+                    boxShadow: "0 0 0 3px rgba(0, 255, 255, 0.5)", // Highlight focus with teal
+                  }}
+                  _active={{
+                    transform: "scale(1.02)", // Slightly smaller scaling effect when active
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)", // Slightly stronger shadow when clicked
+                  }}
+                >
+                  <Icon as={FaClipboardList} fontSize="30px" />
+                  <Text color="gray.500" fontSize="sm" ml={4}>
+                    Add Patient Records
+                  </Text>
+                </Box>
+              </Link>
 
               {/* Step 3 */}
-              <Box display="flex" alignItems="center" mb={6}>
-                <Icon as={FaNewspaper} fontSize="30px" />
-                <Text color="gray.500" fontSize="sm" ml={4}>
-                  Create News Article
-                </Text>
-              </Box>
+              <Link to="/news">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  mb={6}
+                  p={4}
+                  borderRadius="lg"
+                  border="1px solid transparent" // Transparent border to add focus without affecting layout
+                  background="white" // Light background
+                  boxShadow="0 8px 20px rgba(0, 0, 0, 0.15)" // Stronger, more emphasized shadow
+                  cursor="pointer"
+                  transition="all 0.3s ease-in-out"
+                  _hover={{
+                    transform: "scale(1.08)", // Increased pop effect on hover
+                    boxShadow: "0 12px 25px rgba(0, 0, 0, 0.2)", // Emphasized shadow on hover
+                    borderColor: "teal.500", // Border color change
+                    borderWidth: "2px", // Increased border width on hover
+                  }}
+                  _focus={{
+                    outline: "none", // Remove outline on focus
+                    boxShadow: "0 0 0 3px rgba(0, 255, 255, 0.5)", // Highlight focus with teal
+                  }}
+                  _active={{
+                    transform: "scale(1.02)", // Slightly smaller scaling effect when active
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)", // Slightly stronger shadow when clicked
+                  }}
+                >
+                  <Icon as={FaNewspaper} fontSize="30px" />
+                  <Text color="gray.500" fontSize="sm" ml={4}>
+                    Create News Article
+                  </Text>
+                </Box>
+              </Link>
 
               {/* Step 4 */}
-              <Box display="flex" alignItems="center" mb={6}>
-                <Icon mt="10px" as={FaFileAlt} fontSize="30px" />
-                <Text color="gray.500" fontSize="sm" ml={4}>
-                  Manage Appointments
-                </Text>
-              </Box>
+              <Link to="/inbox">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  mb={6}
+                  p={4}
+                  borderRadius="lg"
+                  border="1px solid transparent" // Transparent border to add focus without affecting layout
+                  background="white" // Light background
+                  boxShadow="0 8px 20px rgba(0, 0, 0, 0.15)" // Stronger, more emphasized shadow
+                  cursor="pointer"
+                  transition="all 0.3s ease-in-out"
+                  _hover={{
+                    transform: "scale(1.08)", // Increased pop effect on hover
+                    boxShadow: "0 12px 25px rgba(0, 0, 0, 0.2)", // Emphasized shadow on hover
+                    borderColor: "teal.500", // Border color change
+                    borderWidth: "2px", // Increased border width on hover
+                  }}
+                  _focus={{
+                    outline: "none", // Remove outline on focus
+                    boxShadow: "0 0 0 3px rgba(0, 255, 255, 0.5)", // Highlight focus with teal
+                  }}
+                  _active={{
+                    transform: "scale(1.02)", // Slightly smaller scaling effect when active
+                    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)", // Slightly stronger shadow when clicked
+                  }}
+                >
+                  <Icon as={FaFileAlt} fontSize="30px" />
+                  <Text color="gray.500" fontSize="sm" ml={4}>
+                    Manage Appointments
+                  </Text>
+                </Box>
+              </Link>
             </Box>
           </Box>
         </Box>
