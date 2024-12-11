@@ -2,26 +2,26 @@ import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
-// export const getUsers = async (req, res) => {
-//   const { id } = req.params;
+export const getUsersById = async (req, res) => {
+  const { id } = req.params;
 
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     return res.status(404).json({ success: false, message: "User Not Found" });
-//   }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "User Not Found" });
+  }
 
-//   try {
-//     const user = await User.findById(id);
-//     if (!user) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User Not Found" });
-//     }
-//     res.status(200).json({ success: true, data: user });
-//   } catch (error) {
-//     console.error("Error in fetching user:", error.message);
-//     res.status(500).json({ success: false, message: "Server Error" });
-//   }
-// };
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User Not Found" });
+    }
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.error("Error in fetching user:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
 
 export const getUsers = async (req, res) => {
   try {

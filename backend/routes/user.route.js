@@ -4,6 +4,7 @@ import {
   loginUser,
   deleteUser,
   getUsers,
+  getUsersById,
   logoutUser,
   updateUser,
   getAuthenticatedUser,
@@ -13,8 +14,9 @@ const router = express.Router();
 
 // Define routes for user operations
 router.get("/", getUsers); // Fetch all users
-router.post("/logout", logoutUser); // logout user
 router.get("/auth", getAuthenticatedUser);
+router.get("/:id", getUsersById); // Fetch all users
+router.post("/logout", logoutUser); // logout user
 router.post("/", createUser);
 router.post("/login", loginUser); // Create a new user
 router.delete("/:id", deleteUser); // Delete a user by ID

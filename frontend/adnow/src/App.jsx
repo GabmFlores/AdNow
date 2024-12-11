@@ -1,23 +1,47 @@
+import { useEffect } from "react";
+import axios from "axios";
 import { Box } from "@chakra-ui/react";
-import { Routes, Route } from "react-router-dom"; // Removed useNavigate and useEffect
+import { Routes, Route } from "react-router-dom";
 import { useUsers } from "./store/User"; // Zustand store for managing authentication state
-import AppointPage from "./pages/AppointPage"; // Regular Appointment page
-import Navbar from "./components/Navbar"; // Standard Navbar (Non-authenticated)
-import AdminNavbar from "./components/AdminTopNavbar"; // Admin Top Navbar
-import AdminSideNavbar from "./components/AdminSideNavbar"; // Admin Side Navbar
-import HomePage from "./pages/HomePage"; // Regular HomePage
+import api from "./store/api";
+import AppointPage from "./pages/AppointPage";
+import Navbar from "./components/Navbar";
+import AdminNavbar from "./components/AdminTopNavbar";
+import AdminSideNavbar from "./components/AdminSideNavbar";
+import HomePage from "./pages/HomePage";
 import FilesPage from "./pages/FilesPage";
-import AdminHomePage from "./pages/AdminHomePage"; // Admin HomePage
-import AdminInboxPage from "./pages/AdminInboxPage"; // Admin Inbox Page
-import Footer from "./components/Footer"; // Standard Footer
-import AdminFooter from "./components/AdminFooter"; // Admin Footer
-import PrivateRoute from "./store/PrivateRoute"; // Import PrivateRoute for admin route protection
+import AdminHomePage from "./pages/AdminHomePage";
+import AdminInboxPage from "./pages/AdminInboxPage";
+import Footer from "./components/Footer";
+import AdminFooter from "./components/AdminFooter";
+import PrivateRoute from "./store/PrivateRoute";
 import CalendarPage from "./pages/CalendarPage";
 import SettingsPage from "./pages/SettingsPage";
 import PasswordPage from "./pages/PassPage";
 
 function App() {
-  const { authenticatedUser } = useUsers(); // Zustand store (no need to check session in useEffect anymore)
+  const { authenticatedUser, setAuthenticatedUser } = useUsers();
+
+  // Check session authentication on app load
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        const response = await api.get("/users/auth", {});
+
+        if (response.data.success) {
+          setAuthenticatedUser(response.data.user);
+        } else {
+          setAuthenticatedUser(null);
+        }
+      } catch (error) {
+        console.error("Error during authentication check:", error);
+        setAuthenticatedUser(null);
+      }
+    };
+
+    checkAuthentication();
+  }, [setAuthenticatedUser]);
 
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
