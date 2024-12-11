@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
@@ -16,11 +17,13 @@ import {
   HStack,
   Select,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import { useAppointment } from "../store/Appointment";
 
 const AppointmentModal = ({ isOpen, onClose, appointment }) => {
-  const { updateAppointment, updateAppointmentStatus } = useAppointment();
+  const { updateAppointment, updateAppointmentStatus, deleteAppointment } =
+    useAppointment();
   const toast = useToast();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -32,6 +35,9 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     desiredDate: "",
     scheduledDate: "",
   });
+
+  // State for delete confirmation modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Track original data to check for changes
   const [originalData, setOriginalData] = useState({});
@@ -147,107 +153,177 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     }
   };
 
+  // Handle delete confirmation
+  const handleDeleteConfirmation = async () => {
+    try {
+      // Delete the appointment
+      await deleteAppointment(appointment._id);
+
+      // Success toast
+      toast({
+        title: "Appointment Deleted",
+        description: "The appointment has been successfully deleted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      // Close both modals
+      setIsDeleteModalOpen(false);
+      onClose();
+    } catch (error) {
+      // Error toast
+      toast({
+        title: "Delete Error",
+        description: error.message || "Failed to delete appointment.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="2xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Appointment Details</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <VStack spacing={4}>
-            {/* Name Fields in a Horizontal Stack */}
-            <HStack width="full" spacing={4}>
-              <FormControl flex={1}>
-                <FormLabel>First Name</FormLabel>
-                <Input
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                />
-              </FormControl>
-              <FormControl flex={1}>
-                <FormLabel>Middle Name</FormLabel>
-                <Input
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleChange}
-                />
-              </FormControl>
-              <FormControl flex={1}>
-                <FormLabel>Last Name</FormLabel>
-                <Input
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                />
-              </FormControl>
-            </HStack>
+    <>
+      {/* Main Appointment Details Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Appointment Details</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={4}>
+              {/* Name Fields in a Horizontal Stack */}
+              <HStack width="full" spacing={4}>
+                <FormControl flex={1}>
+                  <FormLabel>First Name</FormLabel>
+                  <Input
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel>Middle Name</FormLabel>
+                  <Input
+                    name="middleName"
+                    value={formData.middleName}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel>Last Name</FormLabel>
+                  <Input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+              </HStack>
 
-            {/* ID and Sex in a Horizontal Stack */}
-            <HStack width="full" spacing={4}>
-              <FormControl flex={2}>
-                <FormLabel>ID Number</FormLabel>
+              {/* ID and Sex in a Horizontal Stack */}
+              <HStack width="full" spacing={4}>
+                <FormControl flex={2}>
+                  <FormLabel>ID Number</FormLabel>
+                  <Input
+                    name="idNumber"
+                    value={formData.idNumber}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel>Sex</FormLabel>
+                  <Select
+                    name="sex"
+                    value={formData.sex}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </Select>
+                </FormControl>
+              </HStack>
+
+              {/* Concern Field */}
+              <FormControl>
+                <FormLabel>Concern</FormLabel>
                 <Input
-                  name="idNumber"
-                  value={formData.idNumber}
+                  name="concern"
+                  value={formData.concern}
                   onChange={handleChange}
                 />
               </FormControl>
-              <FormControl flex={1}>
-                <FormLabel>Sex</FormLabel>
-                <Select name="sex" value={formData.sex} onChange={handleChange}>
-                  <option value="">Select Sex</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </Select>
-              </FormControl>
-            </HStack>
 
-            {/* Concern Field */}
-            <FormControl>
-              <FormLabel>Concern</FormLabel>
-              <Input
-                name="concern"
-                value={formData.concern}
-                onChange={handleChange}
-              />
-            </FormControl>
+              {/* Date Fields in a Horizontal Stack */}
+              <HStack width="full" spacing={4}>
+                <FormControl flex={1}>
+                  <FormLabel>Desired Appointment Date</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    name="desiredDate"
+                    value={formData.desiredDate}
+                    isReadOnly
+                    bg="gray.100"
+                  />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel>Scheduled Appointment Date</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    name="scheduledDate"
+                    value={formData.scheduledDate}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+              </HStack>
+            </VStack>
+          </ModalBody>
 
-            {/* Date Fields in a Horizontal Stack */}
-            <HStack width="full" spacing={4}>
-              <FormControl flex={1}>
-                <FormLabel>Desired Appointment Date</FormLabel>
-                <Input
-                  type="datetime-local"
-                  name="desiredDate"
-                  value={formData.desiredDate}
-                  isReadOnly
-                  bg="gray.100"
-                />
-              </FormControl>
-              <FormControl flex={1}>
-                <FormLabel>Scheduled Appointment Date</FormLabel>
-                <Input
-                  type="datetime-local"
-                  name="scheduledDate"
-                  value={formData.scheduledDate}
-                  onChange={handleChange}
-                />
-              </FormControl>
-            </HStack>
-          </VStack>
-        </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              Delete Appointment
+            </Button>
+            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+              Save Changes
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
-            Save Changes
-          </Button>
-          <Button variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Deletion</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text>
+              Are you sure you want to delete this appointment? This action
+              cannot be undone.
+            </Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={handleDeleteConfirmation}>
+              Confirm Delete
+            </Button>
+            <Button variant="ghost" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
