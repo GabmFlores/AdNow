@@ -28,18 +28,20 @@ function FilesModal({ title, isOpen, onClose, patientData, refreshFiles }) {
     setFormData(patientData || {});
   }, [patientData]);
 
-  const excludedFields = ["__v", "createdAt", "updatedAt", "_id", "image"];
+  const excludedFields = ["__v", "createdAt", "updatedAt", "_id"];
 
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = async () => {
-    const hasChanges = Object.entries(formData).some(
-      ([key, value]) =>
-        !excludedFields.includes(key) &&
-        value?.trim?.() !== patientData[key]?.trim?.()
-    );
+    const hasChanges = Object.entries(formData).some(([key, value]) => {
+      // Check if there is a difference, considering excluded fields
+      if (excludedFields.includes(key)) return false;
+      // Specifically check for image URL change
+      if (key === "image") return value?.trim() !== patientData[key]?.trim();
+      return value?.trim() !== patientData[key]?.trim();
+    });
 
     if (!hasChanges) {
       toast({
@@ -101,6 +103,17 @@ function FilesModal({ title, isOpen, onClose, patientData, refreshFiles }) {
               />
             </Flex>
           )}
+
+          {/* Editable Image Link */}
+          <FormControl mb={4}>
+            <FormLabel>Image URL</FormLabel>
+            <Input
+              value={formData.image || ""}
+              onChange={(e) => handleChange("image", e.target.value)}
+              placeholder="Enter image URL"
+            />
+          </FormControl>
+
           <Flex wrap="wrap" gap={6} justifyContent="space-between">
             {Object.entries(formData)
               .filter(([key]) => !excludedFields.includes(key))

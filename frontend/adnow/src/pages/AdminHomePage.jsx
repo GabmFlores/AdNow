@@ -37,7 +37,7 @@ function AdminHomePage() {
         try {
           // Fetch user data if authenticated
           const response = await axios.get(
-            `/api/users/${authenticatedUser.id}`
+            `/api/users/${authenticatedUser._id}`
           );
           setUsername(response.data.name || "Admin"); // Update username from fetched data
         } catch (error) {
