@@ -38,6 +38,14 @@ const patientSchema = new mongoose.Schema(
       type: String, // URL-based image
       default: "",
     },
+    idNum: {
+      type: String,
+      required: true,
+    },
+    sex: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

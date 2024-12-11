@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar"; // Standard Navbar (Non-authenticated)
 import AdminNavbar from "./components/AdminTopNavbar"; // Admin Top Navbar
 import AdminSideNavbar from "./components/AdminSideNavbar"; // Admin Side Navbar
 import HomePage from "./pages/HomePage"; // Regular HomePage
+import FilesPage from "./pages/FilesPage";
 import AdminHomePage from "./pages/AdminHomePage"; // Admin HomePage
 import AdminInboxPage from "./pages/AdminInboxPage"; // Admin Inbox Page
 import Footer from "./components/Footer"; // Standard Footer
@@ -70,6 +71,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <PasswordPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/files"
+              element={
+                <PrivateRoute>
+                  <FilesPage />
                 </PrivateRoute>
               }
             />

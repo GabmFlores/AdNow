@@ -24,10 +24,21 @@ export const createPatient = async (req, res) => {
     department,
     course,
     image,
+    idNum,
+    sex,
   } = req.body;
 
   // Validate required fields
-  if (!firstName || !lastName || !gbox || !address || !department || !course) {
+  if (
+    !firstName ||
+    !lastName ||
+    !gbox ||
+    !address ||
+    !department ||
+    !course ||
+    !idNum ||
+    !sex
+  ) {
     return res
       .status(400)
       .json({ success: false, message: "Please provide all required fields" });
@@ -43,6 +54,8 @@ export const createPatient = async (req, res) => {
     department,
     course,
     image: image || "",
+    idNum,
+    sex,
   });
 
   try {
