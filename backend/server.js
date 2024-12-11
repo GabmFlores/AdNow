@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import appointmentRoutes from "./routes/appointment.route.js";
 import userRoutes from "./routes/user.route.js";
+import patientRoutes from "./routes/patient.route.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 
@@ -28,6 +29,7 @@ app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/patients", patientRoutes);
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {

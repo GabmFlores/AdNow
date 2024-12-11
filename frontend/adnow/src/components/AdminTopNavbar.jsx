@@ -84,7 +84,9 @@ function AdminTopNavbar() {
               />
             </MenuButton>
             <MenuList>
-              <MenuItem>Profile</MenuItem>
+              <Link to="/settings">
+                <MenuItem>Profile</MenuItem>
+              </Link>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </MenuList>
           </Menu>
