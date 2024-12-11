@@ -55,7 +55,7 @@ export const useUsers = create(
       // Update a user
       updateUser: async (id, updatedUser) => {
         const res = await fetch(`/api/users/${id}`, {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },

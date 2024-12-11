@@ -78,7 +78,9 @@ function AdminTopNavbar() {
             <MenuButton>
               <Avatar
                 name={authenticatedUser?.username || "Guest"}
-                src="https://bit.ly/dan-abramov"
+                src={
+                  authenticatedUser?.image || "https://bit.ly/default-avatar"
+                }
               />
             </MenuButton>
             <MenuList>

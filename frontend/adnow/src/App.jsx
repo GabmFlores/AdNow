@@ -13,6 +13,7 @@ import AdminFooter from "./components/AdminFooter"; // Admin Footer
 import PrivateRoute from "./store/PrivateRoute"; // Import PrivateRoute for admin route protection
 import CalendarPage from "./pages/CalendarPage";
 import SettingsPage from "./pages/SettingsPage";
+import PasswordPage from "./pages/PassPage";
 
 function App() {
   const { authenticatedUser } = useUsers(); // Zustand store (no need to check session in useEffect anymore)
@@ -61,6 +62,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <SettingsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/password"
+              element={
+                <PrivateRoute>
+                  <PasswordPage />
                 </PrivateRoute>
               }
             />

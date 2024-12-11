@@ -1,204 +1,210 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
-  Heading,
   VStack,
+  HStack,
+  Text,
   FormControl,
   FormLabel,
   Input,
   Button,
-  Alert,
-  AlertIcon,
+  useToast,
+  Heading,
+  Image,
+  useColorModeValue,
+  Link,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { useUsers } from "../store/User";
+import SettingsSide from "../components/SettingsSide";
 
 const SettingsPage = () => {
-  const [user, setUser] = useState({
+  const { authenticatedUser, updateUser } = useUsers();
+  const toast = useToast();
+  const [imagePreview, setImagePreview] = useState(null);
+  const profileBgColor = useColorModeValue("blue.50", "blue.900");
+
+  const [formData, setFormData] = useState({
     firstName: "",
-    middleName: "",
     lastName: "",
+    middleName: "",
     suffix: "",
+    username: "",
     email: "",
+    image: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [isModified, setIsModified] = useState(false);
 
-  // Fetch current authenticated user on page load
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError(null); // Reset error on new load
-      try {
-        const response = await fetch("/api/users/authenticated", {
-          method: "GET",
-          credentials: "include", // Include session cookies
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data.");
-        }
-
-        const data = await response.json();
-        const userData = data.user || {}; // Ensure data.user exists
-
-        setUser({
-          firstName: userData.firstName || "",
-          middleName: userData.middleName || "",
-          lastName: userData.lastName || "",
-          suffix: userData.suffix || "",
-          email: userData.email || "",
-        });
-      } catch (err) {
-        setError(err.message || "Failed to fetch user data. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    // Ensure required fields are not empty
-    if (!user.firstName || !user.lastName || !user.email) {
-      setError("First Name, Last Name, and Email are required.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/users/${user._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-        credentials: "include",
+    if (authenticatedUser) {
+      setFormData({
+        firstName: authenticatedUser.firstName || "",
+        lastName: authenticatedUser.lastName || "",
+        middleName: authenticatedUser.middleName || "",
+        suffix: authenticatedUser.suffix || "",
+        username: authenticatedUser.username || "",
+        email: authenticatedUser.email || "",
+        image: authenticatedUser.image || "",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile.");
-      }
-
-      setSuccess("Profile updated successfully!");
-    } catch (err) {
-      setError(err.message || "Failed to update profile. Please try again.");
-    } finally {
-      setLoading(false);
+      setImagePreview(authenticatedUser.image || "");
     }
+  }, [authenticatedUser]);
+
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setImagePreview(url);
+    setFormData((prev) => ({ ...prev, image: url }));
   };
 
-  // Handle form changes
-  const handleChange = (e) => {
+  const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setUser((prev) => {
-      const updatedUser = { ...prev, [name]: value };
-      setIsModified(JSON.stringify(updatedUser) !== JSON.stringify(user));
-      return updatedUser;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileSubmit = async () => {
+    try {
+      const isUnchanged = Object.keys(formData).every(
+        (key) => formData[key] === (authenticatedUser[key] || "")
+      );
+
+      if (isUnchanged) {
+        toast({
+          title: "No Changes Made",
+          description: "Your profile is already up-to-date.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const result = await updateUser(authenticatedUser._id, formData);
+      if (result.success) {
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been successfully updated.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
-    <Box
-      maxW="500px"
-      mx="auto"
-      mt={10}
-      p={5}
-      borderWidth="1px"
-      borderRadius="lg"
-      boxShadow="md"
-    >
-      <Heading size="lg" mb={5}>
-        Settings
-      </Heading>
-      <VStack spacing={4} as="form" onSubmit={handleSubmit}>
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            {error}
-          </Alert>
-        )}
-        {success && (
-          <Alert status="success">
-            <AlertIcon />
-            {success}
-          </Alert>
-        )}
+    <HStack spacing={0} align="start" mt={16} ml={60} p={6}>
+      <SettingsSide></SettingsSide>
 
-        <FormControl isRequired>
-          <FormLabel>First Name</FormLabel>
-          <Input
-            type="text"
-            name="firstName"
-            value={user.firstName}
-            onChange={handleChange}
-            placeholder="Enter First Name"
-          />
-        </FormControl>
+      <Box flex={1} p={6} bg="white" borderRadius="md">
+        <VStack spacing={6} align="stretch">
+          <Box bg={profileBgColor} p={4} borderRadius="md">
+            <Text fontSize="xl" fontWeight="semibold">
+              Profile
+            </Text>
+          </Box>
 
-        <FormControl>
-          <FormLabel>Middle Name (optional)</FormLabel>
-          <Input
-            type="text"
-            name="middleName"
-            value={user.middleName}
-            onChange={handleChange}
-            placeholder="Enter Middle Name"
-          />
-        </FormControl>
+          <VStack spacing={6} align="stretch">
+            <FormControl>
+              <FormLabel>Photo URL</FormLabel>
+              <HStack align="start" spacing={4}>
+                <Input
+                  type="url"
+                  value={formData.image}
+                  onChange={handleImageUrlChange}
+                  placeholder="Enter image URL"
+                />
+                {imagePreview && (
+                  <Image
+                    src={imagePreview}
+                    alt="Profile preview"
+                    w="24"
+                    h="24"
+                    objectFit="cover"
+                    borderRadius="lg"
+                  />
+                )}
+              </HStack>
+            </FormControl>
 
-        <FormControl isRequired>
-          <FormLabel>Last Name</FormLabel>
-          <Input
-            type="text"
-            name="lastName"
-            value={user.lastName}
-            onChange={handleChange}
-            placeholder="Enter Last Name"
-          />
-        </FormControl>
+            <FormControl>
+              <FormLabel>Username</FormLabel>
+              <Input
+                name="username"
+                value={formData.username}
+                onChange={handleProfileChange}
+                placeholder="Enter Username"
+              />
+            </FormControl>
 
-        <FormControl>
-          <FormLabel>Suffix (optional)</FormLabel>
-          <Input
-            type="text"
-            name="suffix"
-            value={user.suffix}
-            onChange={handleChange}
-            placeholder="Enter Suffix"
-          />
-        </FormControl>
+            <HStack spacing={4} w="full">
+              <FormControl flex="1">
+                <FormLabel>First Name</FormLabel>
+                <Input
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleProfileChange}
+                  placeholder="Enter First Name"
+                />
+              </FormControl>
 
-        <FormControl isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            name="email"
-            value={user.email}
-            onChange={handleChange}
-            placeholder="Enter Email"
-          />
-        </FormControl>
+              <FormControl flex="1">
+                <FormLabel>Middle Name (optional)</FormLabel>
+                <Input
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleProfileChange}
+                  placeholder="Enter Middle Name"
+                />
+              </FormControl>
+            </HStack>
 
-        <Button
-          colorScheme="blue"
-          type="submit"
-          isLoading={loading}
-          loadingText="Saving"
-          width="full"
-          isDisabled={!isModified} // Disable button if no changes were made
-        >
-          Save Changes
-        </Button>
-      </VStack>
-    </Box>
+            <HStack spacing={4} w="full">
+              <FormControl flex="1">
+                <FormLabel>Last Name</FormLabel>
+                <Input
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleProfileChange}
+                  placeholder="Enter Last Name"
+                />
+              </FormControl>
+
+              <FormControl flex="1">
+                <FormLabel>Postnominal/Suffix (optional)</FormLabel>
+                <Input
+                  name="suffix"
+                  value={formData.suffix}
+                  onChange={handleProfileChange}
+                  placeholder="Enter Postnominal/Suffix"
+                />
+              </FormControl>
+            </HStack>
+
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleProfileChange}
+                placeholder="Enter Email"
+              />
+            </FormControl>
+
+            <Button w="full" colorScheme="blue" onClick={handleProfileSubmit}>
+              Save Changes
+            </Button>
+          </VStack>
+        </VStack>
+      </Box>
+    </HStack>
   );
 };
 

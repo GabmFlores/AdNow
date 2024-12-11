@@ -13,11 +13,11 @@ const userSchema = new mongoose.Schema(
     },
     suffix: {
       type: String,
-      default: "", // Optional field, can be empty
+      default: "",
     },
     image: {
       type: String,
-      default: "", // Optional field, can be empty (URL or base64 string for image)
+      default: "",
     },
     username: {
       type: String,
