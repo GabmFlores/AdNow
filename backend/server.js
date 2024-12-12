@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import appointmentRoutes from "./routes/appointment.route.js";
+import columnRoutes from "./routes/column.route.js";
 import userRoutes from "./routes/user.route.js";
 import patientRoutes from "./routes/patient.route.js";
 import session from "express-session";
@@ -42,6 +43,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/patients", patientRoutes);
+app.use("/api/columns", columnRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5002;

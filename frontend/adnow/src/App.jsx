@@ -18,7 +18,9 @@ import PrivateRoute from "./store/PrivateRoute";
 import CalendarPage from "./pages/CalendarPage";
 import SettingsPage from "./pages/SettingsPage";
 import PasswordPage from "./pages/PassPage";
-
+import ColumnsPage from "./pages/ColumnsPage";
+import NewsPage from "./pages/NewsPage";
+import ContactPage from "./pages/ContactPage";
 function App() {
   const { authenticatedUser, setAuthenticatedUser } = useUsers();
 
@@ -55,7 +57,9 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/news" element={<NewsPage />} />
             <Route path="/appointments" element={<AppointPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
             {/* Protected Admin Routes */}
             <Route
@@ -103,6 +107,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <FilesPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/columns"
+              element={
+                <PrivateRoute>
+                  <ColumnsPage />
                 </PrivateRoute>
               }
             />

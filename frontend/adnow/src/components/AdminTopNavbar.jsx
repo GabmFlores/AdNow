@@ -151,7 +151,7 @@ function AdminTopNavbar() {
               </Link>
 
               {/* News Column Navigation */}
-              <Link to="/news" style={{ display: "flex", width: "100%" }}>
+              <Link to="/columns" style={{ display: "flex", width: "100%" }}>
                 <Box
                   display="flex"
                   alignItems="center"

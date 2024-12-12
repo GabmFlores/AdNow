@@ -148,7 +148,7 @@ function AdminHomePage() {
               </Link>
 
               {/* Step 3 */}
-              <Link to="/news">
+              <Link to="/columns">
                 <Box
                   display="flex"
                   alignItems="center"

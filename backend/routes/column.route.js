@@ -1,31 +1,23 @@
-import mongoose from "mongoose";
+import express from "express";
+import {
+  getColumns,
+  createColumn,
+  deleteColumn,
+  updateColumn,
+} from "../controllers/column.controller.js";
 
-const columnSchema = new mongoose.Schema(
-  {
-    image: {
-      type: String, // URL-based image
-      required: true,
-    },
-    columnTitle: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    author: {
-      type: String,
-      default: "", // Not required
-      trim: true,
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-  },
-  {
-    timestamps: true, // Adds createdAt and updatedAt fields automatically
-  }
-);
+const router = express.Router();
 
-const Column = mongoose.model("Column", columnSchema);
+// Get all columns
+router.get("/", getColumns);
 
-export default Column;
+// Create a new column
+router.post("/", createColumn);
+
+// Delete a column by ID
+router.delete("/:id", deleteColumn);
+
+// Update column details by ID
+router.patch("/:id", updateColumn);
+
+export default router;

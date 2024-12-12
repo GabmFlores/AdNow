@@ -89,7 +89,7 @@ function AdminSideNavbar() {
 
         {/* News Column Button */}
         <Tooltip label="News Column" placement="right" hasArrow>
-          <Link to="/news">
+          <Link to="/columns">
             <IconButton
               aria-label="News Column"
               icon={<FaNewspaper />}
