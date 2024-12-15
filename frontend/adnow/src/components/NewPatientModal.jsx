@@ -12,6 +12,8 @@ import {
   Input,
   useToast,
   SimpleGrid,
+  FormErrorMessage,
+  Select,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import PropTypes from "prop-types";
@@ -26,42 +28,55 @@ function NewPatientModal({ isOpen, onClose, refreshPatients }) {
     suffix: "",
     gbox: "",
     address: "",
-    department: "",
-    course: "",
+    department: "", // Optional
+    course: "", // Optional
     idNum: "",
-    sex: "",
+    sex: "", // Required select field (Male or Female)
   });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" })); // Clear the error when user types
   };
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    const newErrors = {};
     const requiredFields = [
       "firstName",
       "lastName",
       "gbox",
       "address",
-      "department",
-      "course",
       "idNum",
-      "sex",
+      "sex", // Sex is required
     ];
 
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field].trim()
-    );
+    requiredFields.forEach((field) => {
+      if (!formData[field].trim()) {
+        newErrors[field] = `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } is required`;
+      }
+    });
 
-    if (missingFields.length > 0) {
-      toast({
-        title: "Missing Required Fields",
-        description: `Please fill in: ${missingFields.join(", ")}`,
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-      });
+    // Additional validation for gbox (email format)
+    if (formData.gbox && !formData.gbox.includes("@gbox.adnu.edu.ph")) {
+      newErrors.gbox = "Gbox email must be in the format @gbox.adnu.edu.ph";
+    }
+
+    // Validate that idNum is a number
+    if (formData.idNum && isNaN(formData.idNum)) {
+      newErrors.idNum = "ID Number must be numeric.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
       return;
     }
 
@@ -76,6 +91,18 @@ function NewPatientModal({ isOpen, onClose, refreshPatients }) {
       });
       refreshPatients();
       onClose();
+      setFormData({
+        firstName: "",
+        lastName: "",
+        middleName: "",
+        suffix: "",
+        gbox: "",
+        address: "",
+        department: "", // Optional
+        course: "", // Optional
+        idNum: "",
+        sex: "", // Reset sex field
+      });
     } catch (error) {
       toast({
         title: "Error Adding Patient",
@@ -97,21 +124,71 @@ function NewPatientModal({ isOpen, onClose, refreshPatients }) {
         <ModalCloseButton />
         <ModalBody>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-            {Object.entries(formData).map(([key, value]) => (
-              <FormControl
-                key={key}
-                mb={4}
-                isRequired={key !== "middleName" && key !== "suffix"}
-              >
-                <FormLabel textTransform="capitalize">{key}</FormLabel>
-                <Input
-                  name={key}
-                  value={value}
-                  onChange={handleChange}
-                  placeholder={`Enter ${key}`}
-                />
-              </FormControl>
-            ))}
+            {Object.entries(formData).map(([key, value]) => {
+              if (key === "sex") {
+                return (
+                  <FormControl
+                    key={key}
+                    mb={4}
+                    isRequired={true} // Sex is required
+                    isInvalid={!!errors[key]} // Show error if sex is not selected
+                  >
+                    <FormLabel textTransform="capitalize">Sex</FormLabel>
+                    <Select
+                      name={key}
+                      value={value}
+                      onChange={handleChange}
+                      placeholder="Select Sex"
+                    >
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </Select>
+                    <FormErrorMessage>{errors[key]}</FormErrorMessage>
+                  </FormControl>
+                );
+              }
+
+              // Skip optional fields (department and course) in required validation
+              if (key === "department" || key === "course") {
+                return (
+                  <FormControl
+                    key={key}
+                    mb={4}
+                    isInvalid={!!errors[key]} // Apply error styling if error exists
+                  >
+                    <FormLabel textTransform="capitalize">{key}</FormLabel>
+                    <Input
+                      name={key}
+                      value={value}
+                      onChange={handleChange}
+                      placeholder={`Enter ${key}`}
+                    />
+                    <FormErrorMessage>{errors[key]}</FormErrorMessage>
+                  </FormControl>
+                );
+              }
+
+              return (
+                <FormControl
+                  key={key}
+                  mb={4}
+                  isRequired={key !== "middleName" && key !== "suffix"}
+                  isInvalid={!!errors[key]} // Apply error styling if error exists
+                >
+                  <FormLabel textTransform="capitalize">{key}</FormLabel>
+                  <Input
+                    name={key}
+                    value={value}
+                    onChange={handleChange}
+                    placeholder={`Enter ${key}`}
+                    isInvalid={!!errors[key]} // Show error state for invalid fields
+                    inputMode={key === "idNum" ? "numeric" : "text"} // Use numeric mode for idNum
+                    pattern={key === "idNum" ? "[0-9]*" : undefined} // Restrict non-numeric characters for idNum
+                  />
+                  <FormErrorMessage>{errors[key]}</FormErrorMessage>
+                </FormControl>
+              );
+            })}
           </SimpleGrid>
         </ModalBody>
         <ModalFooter>

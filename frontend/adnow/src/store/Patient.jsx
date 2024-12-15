@@ -9,7 +9,7 @@ export const usePatient = create((set) => ({
     const requiredFields = [
       "firstName",
       "lastName",
-      "gboxAcc",
+      "gboxAcc", // Ensure this field is consistent with the backend
       "sex",
       "course",
       "idNum",
@@ -37,13 +37,20 @@ export const usePatient = create((set) => ({
 
       const data = await res.json();
 
-      if (!data.success) return { success: false, message: data.message };
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
 
-      set((state) => ({ patients: [...state.patients, data.data] }));
+      set((state) => ({
+        patients: [...state.patients, data.data], // Append the new patient
+      }));
       return { success: true, message: "Patient created successfully." };
     } catch (error) {
-      console.log(error);
-      return { success: false, message: "Error creating patient." };
+      console.error("Error creating patient:", error);
+      return {
+        success: false,
+        message: "An error occurred while creating the patient.",
+      };
     }
   },
 
@@ -51,7 +58,11 @@ export const usePatient = create((set) => ({
     try {
       const res = await fetch("/api/patients");
       const data = await res.json();
-      set({ patients: data.data });
+      if (data.success) {
+        set({ patients: data.data });
+      } else {
+        console.error("Error fetching patients:", data.message);
+      }
     } catch (error) {
       console.error("Error fetching patients:", error);
     }
@@ -64,17 +75,23 @@ export const usePatient = create((set) => ({
       });
       const data = await res.json();
 
-      if (!data.success) return { success: false, message: data.message };
+      if (!data.success) {
+        return { success: false, message: data.message };
+      }
 
       set((state) => ({
-        patients: state.patients.filter((patient) => patient._id !== pid),
+        patients: state.patients.filter((patient) => patient._id !== pid), // Remove patient from the list
       }));
       return { success: true, message: data.message };
     } catch (error) {
-      console.log(error);
-      return { success: false, message: "Error deleting patient." };
+      console.error("Error deleting patient:", error);
+      return {
+        success: false,
+        message: "An error occurred while deleting the patient.",
+      };
     }
   },
+
   updatePatient: async (pid, updatedPatient) => {
     try {
       const payload = JSON.stringify(updatedPatient);
@@ -87,21 +104,24 @@ export const usePatient = create((set) => ({
       });
 
       const data = await res.json();
+
       if (!data.success) {
-        console.error("Update error:", data.message);
         return { success: false, message: data.message };
       }
 
       set((state) => ({
-        patients: state.patients.map((patient) =>
-          patient._id === pid ? data.data : patient
+        patients: state.patients.map(
+          (patient) => (patient._id === pid ? data.data : patient) // Replace updated patient in the list
         ),
       }));
 
       return { success: true, message: "Patient updated successfully." };
     } catch (error) {
       console.error("Error updating patient:", error);
-      return { success: false, message: "Error updating patient." };
+      return {
+        success: false,
+        message: "An error occurred while updating the patient.",
+      };
     }
   },
 }));

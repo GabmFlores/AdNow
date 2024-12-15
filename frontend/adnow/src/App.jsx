@@ -96,7 +96,7 @@ function App() {
               }
             />
             <Route
-              path="/password"
+              path="/settings/password"
               element={
                 <PrivateRoute>
                   <PasswordPage />

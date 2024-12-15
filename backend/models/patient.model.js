@@ -21,6 +21,8 @@ const patientSchema = new mongoose.Schema(
     gbox: {
       type: String,
       required: true,
+      match: /^[a-zA-Z0-9._%+-]+@gbox\.adnu\.edu\.ph$/, // Regular expression to match gbox email
+      message: "Please enter a valid gbox email address (@gbox.adnu.edu.ph)",
     },
     address: {
       type: String,
@@ -39,7 +41,7 @@ const patientSchema = new mongoose.Schema(
       default: "",
     },
     idNum: {
-      type: String,
+      type: Number,
       required: true,
     },
     sex: {

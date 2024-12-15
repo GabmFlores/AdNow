@@ -12,6 +12,7 @@ import {
   Input,
   Image,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import PropTypes from "prop-types";
@@ -19,24 +20,65 @@ import { useColumn } from "../store/Column";
 
 function NewColumnModal({ isOpen, onClose, refreshColumns }) {
   const toast = useToast();
-  const createColumn = useColumn((state) => state.createColumn); // Action to create a column
+  const createColumn = useColumn((state) => state.createColumn);
   const [formData, setFormData] = useState({
     columnTitle: "",
     author: "",
     content: "",
     image: "",
   });
-  const [loading, setLoading] = useState(false); // Loading state for button
+  const [errors, setErrors] = useState({
+    columnTitle: "",
+    author: "",
+    content: "",
+    image: "",
+  });
+  const [loading, setLoading] = useState(false);
 
-  // Update form data on input change
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: "" })); // Clear error when the field is updated
   };
 
-  // Handle creating a new column
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    if (!formData.columnTitle) {
+      newErrors.columnTitle = "Title is required";
+      isValid = false;
+    }
+
+    if (!formData.author) {
+      newErrors.author = "Author is required";
+      isValid = false;
+    }
+
+    if (!formData.content) {
+      newErrors.content = "Content is required";
+      isValid = false;
+    }
+
+    // Optionally validate the image URL (basic check for URL format)
+    if (
+      formData.image &&
+      !/^(ftp|http|https):\/\/[^ "]+$/.test(formData.image)
+    ) {
+      newErrors.image = "Invalid image URL";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleCreate = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
-    const result = await createColumn(formData); // Call the createColumn action
+    const result = await createColumn(formData);
     setLoading(false);
 
     if (result.success) {
@@ -47,13 +89,8 @@ function NewColumnModal({ isOpen, onClose, refreshColumns }) {
         isClosable: true,
       });
 
-      // Refresh the columns list after successful creation
       refreshColumns();
-
-      // Close the modal
       onClose();
-
-      // Reset the form
       setFormData({
         columnTitle: "",
         author: "",
@@ -78,34 +115,42 @@ function NewColumnModal({ isOpen, onClose, refreshColumns }) {
         <ModalHeader>Create New Column</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl mb={4}>
+          <FormControl mb={4} isInvalid={!!errors.columnTitle}>
             <FormLabel>Title</FormLabel>
             <Input
               value={formData.columnTitle}
               onChange={(e) => handleChange("columnTitle", e.target.value)}
             />
+            <FormErrorMessage>{errors.columnTitle}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.author}>
             <FormLabel>Author</FormLabel>
             <Input
               value={formData.author}
               onChange={(e) => handleChange("author", e.target.value)}
             />
+            <FormErrorMessage>{errors.author}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.content}>
             <FormLabel>Content</FormLabel>
             <Input
               value={formData.content}
               onChange={(e) => handleChange("content", e.target.value)}
             />
+            <FormErrorMessage>{errors.content}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.image}>
             <FormLabel>Image URL</FormLabel>
             <Input
               value={formData.image}
               onChange={(e) => handleChange("image", e.target.value)}
             />
+            <FormErrorMessage>{errors.image}</FormErrorMessage>
           </FormControl>
+
           {formData.image && (
             <Image
               src={formData.image}
@@ -139,7 +184,7 @@ function NewColumnModal({ isOpen, onClose, refreshColumns }) {
 NewColumnModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  refreshColumns: PropTypes.func.isRequired, // Prop for refreshing columns list
+  refreshColumns: PropTypes.func.isRequired,
 };
 
 export default NewColumnModal;

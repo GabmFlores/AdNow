@@ -37,7 +37,7 @@ const SettingsSide = () => {
 
       <Link
         as={RouterLink}
-        to="/password"
+        to="/settings/password"
         color="blue.600"
         fontWeight="semibold"
         transition="all 0.3s ease-in-out"

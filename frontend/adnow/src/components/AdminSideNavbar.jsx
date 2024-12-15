@@ -26,7 +26,7 @@ function AdminSideNavbar() {
 
   // Function to check if the current route matches the link
   const isActive = (path) =>
-    location.pathname === path ? { bg: "gray.100" } : {};
+    location.pathname.startsWith(path) ? { bg: "gray.200" } : {};
 
   return (
     <Box
@@ -57,7 +57,7 @@ function AdminSideNavbar() {
               p={2}
               borderRadius="md" // Ensure all items have consistent radius
               _hover={{ bg: "gray.100" }} // Hover effect
-              {...isActive("/")} // Apply active styles
+              {...isActive("/home")} // Apply active styles
             >
               <IconButton
                 aria-label="Home"

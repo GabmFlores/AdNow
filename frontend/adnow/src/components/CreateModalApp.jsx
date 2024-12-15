@@ -11,11 +11,12 @@ import {
   FormLabel,
   Input,
   Textarea,
-  Select, // Import Select
+  Select,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useAppointment } from "../store/Appointment";
-import PropTypes from "prop-types"; // Import PropTypes
+import PropTypes from "prop-types";
 import { useState } from "react";
 
 function CreateModalApp({ isOpen, onClose }) {
@@ -26,24 +27,82 @@ function CreateModalApp({ isOpen, onClose }) {
     firstName: "",
     lastName: "",
     gboxAcc: "",
-    sex: "", // Default value is empty
+    sex: "",
     date: "",
     concern: "",
-    idNum: "", // New idNum field
+    idNum: "",
+  });
+
+  // Error handling state
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    gboxAcc: "",
+    sex: "",
+    date: "",
+    concern: "",
+    idNum: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Reset error when the field is updated
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    // Check if required fields are filled out
+    if (!formData.firstName) {
+      newErrors.firstName = "First name is required";
+      isValid = false;
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = "Last name is required";
+      isValid = false;
+    }
+    if (!formData.gboxAcc) {
+      newErrors.gboxAcc = "Email / Gbox Account is required";
+      isValid = false;
+    }
+    if (!formData.idNum) {
+      newErrors.idNum = "ID Number is required";
+      isValid = false;
+    }
+    if (!formData.date) {
+      newErrors.date = "Date is required";
+      isValid = false;
+    }
+    if (!formData.concern) {
+      newErrors.concern = "Concern is required";
+      isValid = false;
+    }
+
+    // Add validation for sex field (ensure it's not empty)
+    if (!formData.sex) {
+      newErrors.sex = "Sex is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async () => {
-    // Use the date for both desiredDate and scheduledDate and set status to "Scheduled"
+    // Validate the form
+    if (!validateForm()) {
+      return;
+    }
+
     const appointmentData = {
       ...formData,
-      desiredDate: formData.date, // Use date for desiredDate
-      scheduledDate: formData.date, // Use date for scheduledDate
-      status: "Scheduled", // Set status to "Scheduled"
+      desiredDate: formData.date,
+      scheduledDate: formData.date,
+      status: "Scheduled",
     };
 
     const response = await createAppointment(appointmentData);
@@ -55,15 +114,15 @@ function CreateModalApp({ isOpen, onClose }) {
         duration: 3000,
         isClosable: true,
       });
-      onClose(); // Close the modal
+      onClose();
       setFormData({
         firstName: "",
         lastName: "",
         gboxAcc: "",
-        sex: "", // Reset sex field
+        sex: "",
         date: "",
         concern: "",
-        idNum: "", // Reset idNum field
+        idNum: "",
       });
     } else {
       toast({
@@ -83,39 +142,47 @@ function CreateModalApp({ isOpen, onClose }) {
         <ModalHeader>New Appointment</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl mb={4}>
+          <FormControl mb={4} isInvalid={!!errors.firstName}>
             <FormLabel>First Name</FormLabel>
             <Input
               name="firstName"
               value={formData.firstName}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.firstName}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.lastName}>
             <FormLabel>Last Name</FormLabel>
             <Input
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.lastName}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Email</FormLabel>
+
+          <FormControl mb={4} isInvalid={!!errors.gboxAcc}>
+            <FormLabel>Email / Gbox Account</FormLabel>
             <Input
               name="gboxAcc"
               value={formData.gboxAcc}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.gboxAcc}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Id Number</FormLabel>
+
+          <FormControl mb={4} isInvalid={!!errors.idNum}>
+            <FormLabel>ID Number</FormLabel>
             <Input
-              name="idNum" // New input for idNum
+              name="idNum"
               value={formData.idNum}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.idNum}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.sex}>
             <FormLabel>Sex</FormLabel>
             <Select
               name="sex"
@@ -126,8 +193,10 @@ function CreateModalApp({ isOpen, onClose }) {
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </Select>
+            <FormErrorMessage>{errors.sex}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.date}>
             <FormLabel>Date</FormLabel>
             <Input
               type="datetime-local"
@@ -135,16 +204,20 @@ function CreateModalApp({ isOpen, onClose }) {
               value={formData.date}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.date}</FormErrorMessage>
           </FormControl>
-          <FormControl mb={4}>
+
+          <FormControl mb={4} isInvalid={!!errors.concern}>
             <FormLabel>Concern</FormLabel>
             <Textarea
               name="concern"
               value={formData.concern}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{errors.concern}</FormErrorMessage>
           </FormControl>
         </ModalBody>
+
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
             Save
@@ -156,7 +229,7 @@ function CreateModalApp({ isOpen, onClose }) {
   );
 }
 
-// Add PropTypes validation
+// PropTypes validation
 CreateModalApp.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
