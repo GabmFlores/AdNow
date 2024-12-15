@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const getUsersById = async (req, res) => {
   const { id } = req.params;
