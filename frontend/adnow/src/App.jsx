@@ -20,17 +20,17 @@ import SettingsPage from "./pages/SettingsPage";
 import PasswordPage from "./pages/PassPage";
 import ColumnsPage from "./pages/ColumnsPage";
 import NewsPage from "./pages/NewsPage";
+import FullNewsPage from "./pages/FullNewsPage"; // Import the full news page
 import ContactPage from "./pages/ContactPage";
+
 function App() {
   const { authenticatedUser, setAuthenticatedUser } = useUsers();
 
   // Check session authentication on app load
-
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
         const response = await api.get("/users/auth", {});
-
         if (response.data.success) {
           setAuthenticatedUser(response.data.user);
         } else {
@@ -60,7 +60,8 @@ function App() {
             <Route path="/news" element={<NewsPage />} />
             <Route path="/appointments" element={<AppointPage />} />
             <Route path="/contact" element={<ContactPage />} />
-
+            <Route path="/columns/:id" element={<FullNewsPage />} />{" "}
+            {/* New route for full news details */}
             {/* Protected Admin Routes */}
             <Route
               path="/home"

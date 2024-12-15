@@ -33,7 +33,7 @@ const NewsPage = () => {
     fetchColumns();
   }, []);
 
-  const columnSpan = useBreakpointValue({ base: 1, md: 2 }); // Responsive grid
+  const columnSpan = useBreakpointValue({ base: 1, md: 1, lg: 1, xl: 1 }); // Ensures it always uses one column per item
 
   // Filter columns based on search query
   const filteredColumns = columns.filter((column) =>
@@ -73,7 +73,11 @@ const NewsPage = () => {
 
       {/* News Grid */}
       <Grid
-        templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
+        templateColumns={{
+          base: "repeat(1, 1fr)", // 1 column on small screens
+          sm: "repeat(2, 1fr)", // 2 columns on small-medium screens
+          md: "repeat(3, 1fr)", // 3 columns on medium and up
+        }}
         gap={6}
       >
         {filteredColumns.map((column) => (
