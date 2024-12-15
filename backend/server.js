@@ -17,9 +17,13 @@ const app = express();
 
 // CORS Setup
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Replace with your frontend URL
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.FRONTEND_URL
+      : "http://localhost:5173", // Use the production URL only in production, otherwise fallback to localhost
   credentials: true, // Allow cookies and authentication
 };
+
 app.use(cors(corsOptions));
 
 const __dirname = path.resolve();
@@ -36,7 +40,6 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       secure: process.env.NODE_ENV === "production", // Secure cookies only in production
       httpOnly: true, // Prevent JavaScript access to the cookie
-      sameSite: "Strict", // Prevent cross-site request forgery
     },
   })
 );
