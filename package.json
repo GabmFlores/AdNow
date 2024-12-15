@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development nodemon backend/server.js",
-    "build": "npm install && npm install --prefix frontend/adnow && npm run build --prefix frontend/adnow",
-    "start": "NODE_ENV=production node backend/server.js"
+    "build": "NODE_ENV=production npm install && npm install --prefix frontend/adnow && npm run build --prefix frontend/adnow",
+    "start": "NODE_ENV=production node backend/server.js",
+    "start:dev": "NODE_ENV=development node backend/server.js"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
@@ -32,6 +33,7 @@
     "supports-color": "^9.4.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "cross-env": "^7.0.3"
   }
 }
