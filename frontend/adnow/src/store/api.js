@@ -1,11 +1,8 @@
 import axios from "axios";
 
-// Conditionally set the API URL based on the environment
+// Set the API URL directly for production
 const api = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "production"
-      ? import.meta.env.VITE_API_URL
-      : "http://localhost:5002/api", // Default to local URL in development
+  baseURL: "https://adnow.onrender.com/api", // Hardcoded production API URL
   withCredentials: true, // Allow cookies and session data
 });
 
