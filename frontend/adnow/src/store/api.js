@@ -4,7 +4,7 @@ import axios from "axios";
 const api = axios.create({
   baseURL:
     process.env.NODE_ENV === "production"
-      ? "https://adnow.onrender.com/api"
+      ? "/api"
       : "http://localhost:5002/api", // Default to local URL in development
   withCredentials: true, // Allow cookies and session data
 });
