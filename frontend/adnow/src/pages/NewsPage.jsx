@@ -106,7 +106,7 @@ const NewsPage = () => {
               </Text>
               <Button
                 size="sm"
-                colorScheme="teal"
+                colorScheme="blue"
                 onClick={() => navigate(`/columns/${column._id}`)} // Navigate to column details
               >
                 Read More

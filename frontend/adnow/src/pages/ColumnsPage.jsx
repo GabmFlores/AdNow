@@ -81,7 +81,7 @@ function ColumnsPage() {
           icon={<FaSearch />}
           aria-label="Search"
           ml={2}
-          colorScheme="teal"
+          colorScheme="blue"
         />
       </Flex>
 
@@ -125,7 +125,7 @@ function ColumnsPage() {
 
       {/* Add Column Button */}
       <Button
-        colorScheme="teal"
+        colorScheme="blue"
         size="lg"
         borderRadius="full"
         position="fixed"

@@ -71,7 +71,7 @@ function FilesPage() {
           icon={<FaSearch />}
           aria-label="Search"
           ml={2}
-          colorScheme="teal"
+          colorScheme="blue"
         />
       </Flex>
 
@@ -135,7 +135,7 @@ function FilesPage() {
 
       {/* The Button to Open NewPatientModal */}
       <Button
-        colorScheme="teal"
+        colorScheme="blue"
         size="lg"
         borderRadius="full"
         position="fixed"
