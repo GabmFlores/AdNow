@@ -206,8 +206,6 @@ export const getAuthenticatedUser = async (req, res, next) => {
       });
     }
 
-    console.log("User found:", user); // Log the user object if found
-
     res.status(200).json({
       success: true,
       user: user, // Return the user data in the response
