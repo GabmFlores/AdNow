@@ -18,12 +18,18 @@ const PrivateRoute = ({ children, redirectTo = "/" }) => {
           setAuthenticated(true);
           setAuthenticatedUser(response.data.user);
         } else {
-          console.error("Authentication failed:", response.data.message);
+          console.error(
+            "Authentication failed:",
+            response.data.error || response.data.message
+          );
           setAuthenticated(false);
           setAuthenticatedUser(null);
         }
       } catch (error) {
-        console.error("Error during authentication check:", error);
+        console.error(
+          "Error during authentication check:",
+          error.message || error
+        );
         setAuthenticated(false);
         setAuthenticatedUser(null);
       } finally {
