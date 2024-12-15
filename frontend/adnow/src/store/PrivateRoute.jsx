@@ -20,7 +20,7 @@ const PrivateRoute = ({ children, redirectTo = "/" }) => {
         } else {
           console.error(
             "Authentication failed:",
-            response.data.error || response.data.message
+            response.data.error || response.data.message || response.data
           );
           setAuthenticated(false);
           setAuthenticatedUser(null);
