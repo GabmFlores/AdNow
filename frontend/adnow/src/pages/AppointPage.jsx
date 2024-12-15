@@ -24,6 +24,70 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { useAppointment } from "../store/Appointment";
 
+const departmentCourseMap = {
+  "COLLEGE OF BUSINESS AND ACCOUNTANCY": [
+    "BS Accountancy",
+    "BS BA Financial Accounting",
+    "BS BA major in Accounting Information Management",
+    "BS BA major in Banking and Finance",
+    "BS BA major in Business Economics",
+    "BS BA major in Business Engineering",
+    "BS BA major in Business Management Honors Program",
+    "BS BA major in Financial Management and Accounting",
+    "BS BA major in Hospital and Health Care Management",
+    "BS BA major in Legal Management",
+    "BS BA major in Management",
+    "BS BA major in Marketing Management",
+  ],
+  "COLLEGE OF COMPUTER STUDIES": [
+    "BS Computer Engineering",
+    "BS Computer Science",
+    "BS Digital Illustration and Animation",
+    "BS Information Systems",
+    "BS Information Technology",
+  ],
+  "COLLEGE OF EDUCATION": [
+    "Bachelor of Early Childhood Education (BECEd)",
+    "Bachelor of Elementary Education (BEED)",
+    "Bachelor of Library Information Science (BLIS)",
+    "Bachelor of Secondary Education major in English",
+    "Bachelor of Secondary Education major in Filipino",
+    "Bachelor of Secondary Education major in Mathematics",
+    "Bachelor of Secondary Education major in Science",
+    "Bachelor of Secondary Education major in Social Studies",
+    "Bachelor of Special Needs Education major in Early Childhood Education",
+    "Bachelor of Special Needs Education major in Elementary School Teaching",
+    "Bachelor of Special Needs Education major in Generalist",
+    "Bachelor of Special Needs Education major in Teaching Deaf and Hard-of-Hearing Learners",
+    "Bachelor of Special Needs Education major in Teaching Learners with Visual Impairment",
+  ],
+  "COLLEGE OF HUMANITIES AND SOCIAL SCIENCES": [
+    "AB Broadcasting",
+    "AB Communication",
+    "AB Economics",
+    "AB English Language Studies",
+    "AB Journalism",
+    "AB Literature",
+    "AB Philosophy - Foreign Service and International Relations",
+    "AB Philosophy - Pre-Law",
+    "AB Philosophy - Teaching",
+    "AB Political Science major in Government and Politics",
+    "AB Political Science major in Public Administration",
+    "AB Religious and Values Education",
+    "BS Development Communication",
+  ],
+  "COLLEGE OF NURSING": ["BS Nursing"],
+  "COLLEGE OF SCIENCE, ENGINEERING AND ARCHITECTURE": [
+    "BS Architecture",
+    "BS Biology",
+    "BS Civil Engineering",
+    "BS Electronics Engineering",
+    "BS Environmental Management",
+    "BS Mathematics",
+    "BS Computer Engineering",
+  ],
+};
+
 const AppointPage = () => {
   const [newAppointment, setNewAppointment] = useState({
     lastName: "",
@@ -168,11 +232,20 @@ const AppointPage = () => {
 
   const handleDepartmentChange = (e) => {
     const value = e.target.value;
+
+    // Reset `course` and related state when department changes
+    setNewAppointment({
+      ...newAppointment,
+      department: value,
+      course: value === "Other" ? "" : "",
+    });
+
     if (value === "Other") {
       setIsOtherDepartment(true);
+      setIsOtherCourse(false); // Ensure no "Other" course persists
     } else {
       setIsOtherDepartment(false);
-      setNewAppointment({ ...newAppointment, department: value });
+      setIsOtherCourse(false); // Reset "Other" course input if applicable
     }
   };
 
@@ -267,7 +340,7 @@ const AppointPage = () => {
                 </Text>
               </FormLabel>
               <Input
-                placeholder="Enter middle name (Optional)"
+                placeholder="Enter middle name"
                 value={newAppointment.middleName}
                 onChange={(e) =>
                   setNewAppointment({
@@ -337,20 +410,17 @@ const AppointPage = () => {
 
           <HStack spacing={4} align="flex-start">
             <FormControl flex={1} isInvalid={!!errors.department}>
-              <FormLabel>
-                Department{" "}
-                <Text as="span" fontSize="sm" color="gray.500">
-                  (Optional)
-                </Text>
-              </FormLabel>
+              <FormLabel>Department (Optional)</FormLabel>
               <Select
                 placeholder="Please Select"
                 value={newAppointment.department}
                 onChange={handleDepartmentChange}
               >
-                <option value="Science">Computer Studies</option>
-                <option value="Arts">Humanities</option>
-                <option value="Engineering">Engineering</option>
+                {Object.keys(departmentCourseMap).map((department) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
                 <option value="Other">Other</option>
               </Select>
               {isOtherDepartment && (
@@ -383,9 +453,15 @@ const AppointPage = () => {
                 placeholder="Please Select"
                 value={newAppointment.course}
                 onChange={handleCourseChange}
+                isDisabled={!newAppointment.department}
               >
-                <option value="Course 1">Course 1</option>
-                <option value="Course 2">Course 2</option>
+                {departmentCourseMap[newAppointment.department]?.map(
+                  (course) => (
+                    <option key={course} value={course}>
+                      {course}
+                    </option>
+                  )
+                )}
                 <option value="Other">Other</option>
               </Select>
               {isOtherCourse && (

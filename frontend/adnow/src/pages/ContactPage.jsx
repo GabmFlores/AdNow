@@ -8,7 +8,6 @@ import {
   Icon,
   SimpleGrid,
   useToast,
-  Divider,
 } from "@chakra-ui/react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { useState } from "react";

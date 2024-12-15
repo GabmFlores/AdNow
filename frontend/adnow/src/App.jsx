@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import axios from "axios";
 import { Box } from "@chakra-ui/react";
 import { Routes, Route } from "react-router-dom";
 import { useUsers } from "./store/User"; // Zustand store for managing authentication state

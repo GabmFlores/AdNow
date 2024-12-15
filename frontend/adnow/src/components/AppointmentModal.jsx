@@ -34,15 +34,13 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     concern: "",
     desiredDate: "",
     scheduledDate: "",
+    department: "",
+    course: "",
   });
 
-  // State for delete confirmation modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // Track original data to check for changes
   const [originalData, setOriginalData] = useState({});
 
-  // Populate form data when appointment prop changes
   useEffect(() => {
     if (appointment) {
       const formattedData = {
@@ -56,6 +54,8 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         scheduledDate: formatDateForInput(
           appointment.scheduledDate || appointment.desiredDate
         ),
+        department: appointment.department || "",
+        course: appointment.course || "",
       };
 
       setFormData(formattedData);
@@ -63,7 +63,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     }
   }, [appointment]);
 
-  // Helper function to format date for datetime-local input
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -75,14 +74,12 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
-  // Check if any field has changed
   const hasChanges = () => {
     return Object.keys(formData).some(
       (key) => formData[key] !== originalData[key]
     );
   };
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -91,9 +88,7 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async () => {
-    // Check if there are any changes
     if (!hasChanges()) {
       toast({
         title: "No Changes",
@@ -107,22 +102,14 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     }
 
     try {
-      // Prepare updated appointment data
       const updatedAppointment = {
         ...appointment,
-        firstName: formData.firstName,
-        middleName: formData.middleName,
-        lastName: formData.lastName,
-        idNumber: formData.idNumber,
-        sex: formData.sex,
-        concern: formData.concern,
+        ...formData,
         scheduledDate: new Date(formData.scheduledDate).toISOString(),
       };
 
-      // Update appointment details
       await updateAppointment(appointment._id, updatedAppointment);
 
-      // Update appointment status if scheduled date changed
       if (formData.scheduledDate !== originalData.scheduledDate) {
         await updateAppointmentStatus(
           appointment._id,
@@ -131,7 +118,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         );
       }
 
-      // Success toast
       toast({
         title: "Appointment Updated",
         description: "Appointment details have been successfully updated.",
@@ -142,7 +128,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
 
       onClose();
     } catch (error) {
-      // Error toast
       toast({
         title: "Error",
         description: error.message || "Failed to update appointment details.",
@@ -153,13 +138,10 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     }
   };
 
-  // Handle delete confirmation
   const handleDeleteConfirmation = async () => {
     try {
-      // Delete the appointment
       await deleteAppointment(appointment._id);
 
-      // Success toast
       toast({
         title: "Appointment Deleted",
         description: "The appointment has been successfully deleted.",
@@ -168,11 +150,9 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         isClosable: true,
       });
 
-      // Close both modals
       setIsDeleteModalOpen(false);
       onClose();
     } catch (error) {
-      // Error toast
       toast({
         title: "Delete Error",
         description: error.message || "Failed to delete appointment.",
@@ -185,7 +165,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
 
   return (
     <>
-      {/* Main Appointment Details Modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="2xl">
         <ModalOverlay />
         <ModalContent>
@@ -193,7 +172,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
-              {/* Name Fields in a Horizontal Stack */}
               <HStack width="full" spacing={4}>
                 <FormControl flex={1}>
                   <FormLabel>First Name</FormLabel>
@@ -221,7 +199,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
                 </FormControl>
               </HStack>
 
-              {/* ID and Sex in a Horizontal Stack */}
               <HStack width="full" spacing={4}>
                 <FormControl flex={2}>
                   <FormLabel>ID Number</FormLabel>
@@ -245,7 +222,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
                 </FormControl>
               </HStack>
 
-              {/* Concern Field */}
               <FormControl>
                 <FormLabel>Concern</FormLabel>
                 <Input
@@ -255,7 +231,25 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
                 />
               </FormControl>
 
-              {/* Date Fields in a Horizontal Stack */}
+              <HStack width="full" spacing={4}>
+                <FormControl flex={1}>
+                  <FormLabel>Department</FormLabel>
+                  <Input
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+                <FormControl flex={1}>
+                  <FormLabel>Course</FormLabel>
+                  <Input
+                    name="course"
+                    value={formData.course}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+              </HStack>
+
               <HStack width="full" spacing={4}>
                 <FormControl flex={1}>
                   <FormLabel>Desired Appointment Date</FormLabel>
@@ -298,7 +292,6 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         </ModalContent>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -341,6 +334,8 @@ AppointmentModal.propTypes = {
     concern: PropTypes.string,
     desiredDate: PropTypes.string,
     scheduledDate: PropTypes.string,
+    department: PropTypes.string,
+    course: PropTypes.string,
   }).isRequired,
 };
 
