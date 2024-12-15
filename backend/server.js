@@ -33,8 +33,10 @@ app.use(
     rolling: true, // Reset expiration on every request
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }), // Store sessions in MongoDB
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // Cookie expiration time (1 day)
-      secure: false, // Set to true if using HTTPS
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === "production", // Secure cookies only in production
+      httpOnly: true, // Prevent JavaScript access to the cookie
+      sameSite: "Strict", // Prevent cross-site request forgery
     },
   })
 );
