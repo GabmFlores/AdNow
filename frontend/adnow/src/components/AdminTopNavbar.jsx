@@ -24,23 +24,27 @@ import {
   FaFileAlt,
   FaCog,
 } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom"; // Add useNavigate
-import { useUsers } from "../store/User"; // Update the import path for your zustand store
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Add useLocation
+import { useUsers } from "../store/User";
 
 function AdminTopNavbar() {
-  const [isOpen, setIsOpen] = useState(false); // State to control drawer visibility
-  const { logoutUser, authenticatedUser } = useUsers(); // Get the store methods and the authenticated user
-  const navigate = useNavigate(); // Initialize the navigate function
+  const [isOpen, setIsOpen] = useState(false);
+  const { logoutUser, authenticatedUser } = useUsers();
+  const navigate = useNavigate();
+  const location = useLocation(); // Get the current path
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
 
   const handleLogout = async () => {
     const data = await logoutUser();
     if (data.success) {
-      // After successful logout, navigate to the homepage
-      navigate("/"); // Redirect to the homepage
+      navigate("/"); // Redirect to the homepage after logout
     }
   };
+
+  // Function to check if the current path matches the link
+  const isActive = (path) =>
+    location.pathname === path ? { bg: "gray.200" } : {};
 
   return (
     <Box
@@ -51,7 +55,7 @@ function AdminTopNavbar() {
       right="0"
       h="60px"
       boxShadow="md"
-      borderRadius="0 0 30px 30px" // Rounded bottom corners
+      borderRadius="0 0 30px 30px"
       zIndex="10"
       px={10}
       py={10}
@@ -66,7 +70,7 @@ function AdminTopNavbar() {
           width="60px"
           height="60px"
           fontSize="25px"
-          onClick={onOpen} // Opens the drawer when clicked
+          onClick={onOpen}
         />
 
         {/* User Info */}
@@ -109,6 +113,7 @@ function AdminTopNavbar() {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   p={2}
+                  {...isActive("/home")} // Apply active styles
                 >
                   <IconButton
                     aria-label="Home"
@@ -134,6 +139,7 @@ function AdminTopNavbar() {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   p={2}
+                  {...isActive("/inbox")} // Apply active styles
                 >
                   <IconButton
                     aria-label="Inbox"
@@ -159,6 +165,7 @@ function AdminTopNavbar() {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   p={2}
+                  {...isActive("/columns")} // Apply active styles
                 >
                   <IconButton
                     aria-label="News"
@@ -184,6 +191,7 @@ function AdminTopNavbar() {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   p={2}
+                  {...isActive("/files")} // Apply active styles
                 >
                   <IconButton
                     aria-label="Files"
@@ -209,6 +217,7 @@ function AdminTopNavbar() {
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   p={2}
+                  {...isActive("/settings")} // Apply active styles
                 >
                   <IconButton
                     aria-label="Settings"
