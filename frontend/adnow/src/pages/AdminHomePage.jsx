@@ -39,7 +39,7 @@ function AdminHomePage() {
           const response = await axios.get(
             `/api/users/${authenticatedUser._id}`
           );
-          setUsername(response.data.name || "Admin"); // Update username from fetched data
+          setUsername(response.data.data.username || "Admin"); // Update username from fetched data
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUsername("Admin"); // Fallback username
