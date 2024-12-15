@@ -17,7 +17,7 @@ const app = express();
 
 // CORS Setup
 const corsOptions = {
-  origin: "http://localhost:5173", // Replace with your frontend URL
+  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Replace with your frontend URL
   credentials: true, // Allow cookies and authentication
 };
 app.use(cors(corsOptions));
