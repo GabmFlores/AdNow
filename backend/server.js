@@ -17,10 +17,7 @@ const app = express();
 
 // CORS Setup
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL
-      : "http://localhost:5173", // Use the production URL only in production, otherwise fallback to localhost
+  origin: "https://adnow.onrender.com",
   credentials: true, // Allow cookies and authentication
 };
 
