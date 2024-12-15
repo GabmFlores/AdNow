@@ -8,10 +8,10 @@ import {
   Icon,
   SimpleGrid,
   useToast,
+  Divider,
 } from "@chakra-ui/react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { useState } from "react";
-import axios from "axios";
 
 const ContactPage = () => {
   const toast = useToast();
@@ -21,6 +21,7 @@ const ContactPage = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFunctional, setIsFunctional] = useState(false); // To indicate if the form is functional
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,20 +29,22 @@ const ContactPage = () => {
   };
 
   const handleSubmit = async () => {
+    if (!isFunctional) return; // Prevent submission if not functional
     setIsSubmitting(true);
     try {
-      const response = await axios.post("/api/contact", formData);
-      if (response.status === 200) {
-        toast({
-          title: "Message Sent",
-          description:
-            "Thank you for reaching out. We will get back to you soon.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        setFormData({ name: "", email: "", message: "" });
-      }
+      // Simulate sending the message (mock API call)
+      // const response = await axios.post("/api/contact", formData);
+      // if (response.status === 200) {
+      toast({
+        title: "Message Sent",
+        description:
+          "Thank you for reaching out. We will get back to you soon.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      setFormData({ name: "", email: "", message: "" });
+      // }
     } catch (error) {
       console.error("Error submitting contact form:", error);
       toast({
@@ -68,6 +71,15 @@ const ContactPage = () => {
       >
         Contact Us
       </Text>
+
+      {/* Indicating that the form is not functional */}
+      {!isFunctional && (
+        <Box bg="red.100" p={4} borderRadius="md" textAlign="center" mb={6}>
+          <Text color="red.600" fontWeight="bold">
+            Will be active when ready for commercial use.
+          </Text>
+        </Box>
+      )}
 
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10} mb={10}>
         {/* Contact Information */}
@@ -117,6 +129,7 @@ const ContactPage = () => {
             bg="gray.100"
             borderRadius="md"
             mb={4}
+            isDisabled={!isFunctional} // Disable if not functional
           />
           <Input
             placeholder="Your Email"
@@ -126,6 +139,7 @@ const ContactPage = () => {
             bg="gray.100"
             borderRadius="md"
             mb={4}
+            isDisabled={!isFunctional} // Disable if not functional
           />
           <Textarea
             placeholder="Your Message"
@@ -135,12 +149,14 @@ const ContactPage = () => {
             bg="gray.100"
             borderRadius="md"
             mb={4}
+            isDisabled={!isFunctional} // Disable if not functional
           />
           <Button
             colorScheme="teal"
             width="full"
             onClick={handleSubmit}
             isLoading={isSubmitting}
+            isDisabled={!isFunctional} // Disable if not functional
           >
             Send Message
           </Button>
