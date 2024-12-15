@@ -16,9 +16,13 @@ const appointmentSchema = new mongoose.Schema(
     gboxAcc: {
       type: String,
       required: true,
+      match: [
+        /^[a-zA-Z0-9._%+-]+@gbox\.adnu\.edu\.ph$/,
+        "Please provide a valid Gbox email address with @gbox.adnu.edu.ph domain",
+      ], // Email validation for @gbox.adnu.edu.ph
     },
     idNum: {
-      type: String,
+      type: Number,
       required: true,
     },
     sex: {

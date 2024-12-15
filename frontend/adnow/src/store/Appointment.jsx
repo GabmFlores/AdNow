@@ -5,15 +5,30 @@ export const useAppointment = create((set) => ({
   setAppointments: (appointments) => set({ appointments }),
 
   createAppointment: async (newAppointment) => {
+    // Check if all required fields are filled
     if (
       !newAppointment.lastName ||
       !newAppointment.firstName ||
       !newAppointment.gboxAcc ||
       !newAppointment.sex ||
       !newAppointment.desiredDate ||
-      !newAppointment.concern
+      !newAppointment.concern ||
+      !newAppointment.idNum || // Ensure idNum is provided
+      isNaN(newAppointment.idNum) // Ensure idNum is a number
     ) {
-      return { success: false, message: "Please fill in all fields." };
+      return {
+        success: false,
+        message: "Please fill in all fields correctly.",
+      };
+    }
+
+    // Validate Gbox email
+    const gboxEmailPattern = /^[a-zA-Z0-9._%+-]+@gbox\.adnu\.edu\.ph$/;
+    if (!gboxEmailPattern.test(newAppointment.gboxAcc)) {
+      return {
+        success: false,
+        message: "Please provide a valid Gbox email address.",
+      };
     }
 
     // Format the desiredDate to ISO 8601 format
@@ -29,6 +44,7 @@ export const useAppointment = create((set) => ({
       body: JSON.stringify({
         ...newAppointment,
         desiredDate: formattedDesiredDate, // Ensure the date is properly formatted
+        idNum: Number(newAppointment.idNum), // Ensure idNum is passed as a number
       }),
     });
 

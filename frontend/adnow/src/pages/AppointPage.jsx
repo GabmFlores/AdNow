@@ -17,6 +17,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  FormHelperText,
 } from "@chakra-ui/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -33,17 +34,93 @@ const AppointPage = () => {
     sex: "",
     department: "",
     course: "",
-    desiredDate: "", // Changed from 'date' to 'desiredDate'
+    desiredDate: "",
     concern: "",
   });
 
-  const [isOtherCourse, setIsOtherCourse] = useState(false); // Track if user selects "Other" for course
-  const [isOtherDepartment, setIsOtherDepartment] = useState(false); // Track if user selects "Other" for department
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isOtherCourse, setIsOtherCourse] = useState(false);
+  const [isOtherDepartment, setIsOtherDepartment] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({
+    lastName: "",
+    firstName: "",
+    middleName: "",
+    gboxAcc: "",
+    idNum: "",
+    sex: "",
+    department: "",
+    course: "",
+    desiredDate: "",
+    concern: "",
+  });
   const toast = useToast();
   const { createAppointment } = useAppointment();
 
   const handleAddAppointment = async () => {
+    // Reset errors before validation
+    setErrors({
+      lastName: "",
+      firstName: "",
+      middleName: "",
+      gboxAcc: "",
+      idNum: "",
+      sex: "",
+      department: "",
+      course: "",
+      desiredDate: "",
+      concern: "",
+    });
+
+    let formIsValid = true;
+    const newErrors = {};
+
+    // Validate required fields and format
+    if (!newAppointment.lastName) {
+      formIsValid = false;
+      newErrors.lastName = "Last Name is required.";
+    }
+    if (!newAppointment.firstName) {
+      formIsValid = false;
+      newErrors.firstName = "First Name is required.";
+    }
+    if (
+      !newAppointment.gboxAcc ||
+      !newAppointment.gboxAcc.includes("@gbox.adnu.edu.ph")
+    ) {
+      formIsValid = false;
+      newErrors.gboxAcc =
+        "Gbox account should be in the format: @gbox.adnu.edu.ph";
+    }
+    if (!newAppointment.idNum || isNaN(newAppointment.idNum)) {
+      formIsValid = false;
+      newErrors.idNum = "ID number should be a number.";
+    }
+    if (!newAppointment.sex) {
+      formIsValid = false;
+      newErrors.sex = "Sex is required.";
+    }
+    if (!newAppointment.desiredDate) {
+      formIsValid = false;
+      newErrors.desiredDate = "Date and time are required.";
+    }
+    if (!newAppointment.concern) {
+      formIsValid = false;
+      newErrors.concern = "Concern is required.";
+    }
+
+    // If any validation fails, show an error toast and highlight errors
+    if (!formIsValid) {
+      setErrors(newErrors);
+      toast({
+        title: "Input Error",
+        description: "Please correct the highlighted fields.",
+        status: "error",
+        isClosable: true,
+      });
+      return; // Stop the form submission if there are errors
+    }
+
+    // If validation passes, proceed with the appointment creation
     const { success, message } = await createAppointment(newAppointment);
 
     if (!success) {
@@ -53,7 +130,7 @@ const AppointPage = () => {
         status: "error",
         isClosable: true,
       });
-      return; // Don't reset the form
+      return;
     }
 
     toast({
@@ -63,7 +140,7 @@ const AppointPage = () => {
       isClosable: true,
     });
 
-    // Reset the form only if the submission is successful
+    // Reset the form
     setNewAppointment({
       lastName: "",
       firstName: "",
@@ -73,7 +150,7 @@ const AppointPage = () => {
       sex: "",
       department: "",
       course: "",
-      desiredDate: "", // Reset 'desiredDate'
+      desiredDate: "",
       concern: "",
     });
   };
@@ -82,7 +159,6 @@ const AppointPage = () => {
     const value = e.target.value;
     setNewAppointment({ ...newAppointment, course: value });
 
-    // Show input field if "Other" is selected
     if (value === "Other") {
       setIsOtherCourse(true);
     } else {
@@ -100,20 +176,17 @@ const AppointPage = () => {
     }
   };
 
-  // Open the confirmation modal
   const openConfirmationModal = () => {
     setIsModalOpen(true);
   };
 
-  // Close the modal
   const closeConfirmationModal = () => {
     setIsModalOpen(false);
   };
 
-  // Confirm the appointment submission
   const confirmAppointment = () => {
     handleAddAppointment();
-    closeConfirmationModal(); // Close the modal after confirmation
+    closeConfirmationModal();
   };
 
   return (
@@ -123,9 +196,6 @@ const AppointPage = () => {
       display="flex"
       alignItems="center"
       justifyContent="center"
-      bgImage="" // Add your background image here
-      bgSize="cover"
-      bgPosition="center"
     >
       <Box
         w={{ base: "90%", md: "60%" }}
@@ -134,11 +204,10 @@ const AppointPage = () => {
         borderRadius="lg"
         boxShadow="lg"
       >
-        {/* AdNow Logo and Title centered */}
         <HStack justify="center" spacing={2} mb={3}>
           <Box
             as="img"
-            src="https://paascu.org.ph/wp-content/uploads/elementor/thumbs/school-18-p3rc1n0wwxg1fnm1iu2x786az999uvjyw6y3imbo8g.png" // Replace with your logo
+            src="https://paascu.org.ph/wp-content/uploads/elementor/thumbs/school-18-p3rc1n0wwxg1fnm1iu2x786az999uvjyw6y3imbo8g.png"
             alt="AdNow Logo"
             w="40px"
             h="40px"
@@ -152,10 +221,9 @@ const AppointPage = () => {
           Book Appointment
         </Heading>
 
-        {/* Form Fields */}
         <VStack spacing={6} align="stretch">
           <HStack spacing={4} align="flex-start">
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.lastName}>
               <FormLabel>Last Name</FormLabel>
               <Input
                 placeholder="Enter last name"
@@ -167,8 +235,13 @@ const AppointPage = () => {
                   })
                 }
               />
+              {errors.lastName && (
+                <FormHelperText color="red.500">
+                  {errors.lastName}
+                </FormHelperText>
+              )}
             </FormControl>
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.firstName}>
               <FormLabel>First Name</FormLabel>
               <Input
                 placeholder="Enter first name"
@@ -180,6 +253,11 @@ const AppointPage = () => {
                   })
                 }
               />
+              {errors.firstName && (
+                <FormHelperText color="red.500">
+                  {errors.firstName}
+                </FormHelperText>
+              )}
             </FormControl>
             <FormControl flex={1}>
               <FormLabel>
@@ -197,14 +275,12 @@ const AppointPage = () => {
                     middleName: e.target.value,
                   })
                 }
-                borderColor="gray.300" // Lighter border to make it less prominent
-                _hover={{ borderColor: "gray.500" }} // Hover effect to match the theme
               />
             </FormControl>
           </HStack>
 
           <HStack spacing={4} align="flex-start">
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.gboxAcc}>
               <FormLabel>Gbox Account</FormLabel>
               <Input
                 placeholder="Enter Gbox account"
@@ -216,8 +292,13 @@ const AppointPage = () => {
                   })
                 }
               />
+              {errors.gboxAcc && (
+                <FormHelperText color="red.500">
+                  {errors.gboxAcc}
+                </FormHelperText>
+              )}
             </FormControl>
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.idNum}>
               <FormLabel>ID Number</FormLabel>
               <Input
                 placeholder="Enter ID number"
@@ -229,11 +310,14 @@ const AppointPage = () => {
                   })
                 }
               />
+              {errors.idNum && (
+                <FormHelperText color="red.500">{errors.idNum}</FormHelperText>
+              )}
             </FormControl>
           </HStack>
 
           <HStack spacing={4} align="flex-start">
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.sex}>
               <FormLabel>Sex</FormLabel>
               <Select
                 placeholder="Please Select"
@@ -245,11 +329,14 @@ const AppointPage = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </Select>
+              {errors.sex && (
+                <FormHelperText color="red.500">{errors.sex}</FormHelperText>
+              )}
             </FormControl>
           </HStack>
 
           <HStack spacing={4} align="flex-start">
-            <FormControl flex={1}>
+            <FormControl flex={1} isInvalid={!!errors.department}>
               <FormLabel>
                 Department{" "}
                 <Text as="span" fontSize="sm" color="gray.500">
@@ -266,7 +353,6 @@ const AppointPage = () => {
                 <option value="Engineering">Engineering</option>
                 <option value="Other">Other</option>
               </Select>
-              {/* Display input if "Other" is selected */}
               {isOtherDepartment && (
                 <Input
                   placeholder="Enter your department"
@@ -279,8 +365,14 @@ const AppointPage = () => {
                   }
                 />
               )}
+              {errors.department && (
+                <FormHelperText color="red.500">
+                  {errors.department}
+                </FormHelperText>
+              )}
             </FormControl>
-            <FormControl flex={1}>
+
+            <FormControl flex={1} isInvalid={!!errors.course}>
               <FormLabel>
                 Program or Course{" "}
                 <Text as="span" fontSize="sm" color="gray.500">
@@ -296,7 +388,6 @@ const AppointPage = () => {
                 <option value="Course 2">Course 2</option>
                 <option value="Other">Other</option>
               </Select>
-              {/* Display input if "Other" is selected */}
               {isOtherCourse && (
                 <Input
                   placeholder="Enter your course/program"
@@ -309,21 +400,24 @@ const AppointPage = () => {
                   }
                 />
               )}
+              {errors.course && (
+                <FormHelperText color="red.500">{errors.course}</FormHelperText>
+              )}
             </FormControl>
           </HStack>
 
-          <FormControl>
+          <FormControl isInvalid={!!errors.desiredDate}>
             <FormLabel>Date and Time</FormLabel>
             <DatePicker
               selected={
                 newAppointment.desiredDate
                   ? new Date(newAppointment.desiredDate)
-                  : null // Changed to 'desiredDate'
+                  : null
               }
               onChange={(date) =>
                 setNewAppointment({
                   ...newAppointment,
-                  desiredDate: date.toISOString(), // Store in 'desiredDate'
+                  desiredDate: date.toISOString(),
                 })
               }
               showTimeSelect
@@ -331,9 +425,14 @@ const AppointPage = () => {
               placeholderText="yy/mm/dd hh:mm"
               className="react-datepicker-custom-input"
             />
+            {errors.desiredDate && (
+              <FormHelperText color="red.500">
+                {errors.desiredDate}
+              </FormHelperText>
+            )}
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={!!errors.concern}>
             <FormLabel>Concern/s</FormLabel>
             <Input
               placeholder="Specify your concern"
@@ -345,6 +444,9 @@ const AppointPage = () => {
                 })
               }
             />
+            {errors.concern && (
+              <FormHelperText color="red.500">{errors.concern}</FormHelperText>
+            )}
           </FormControl>
 
           <Button colorScheme="blue" w="full" onClick={openConfirmationModal}>

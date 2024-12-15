@@ -8,7 +8,12 @@ export const getAppointments = async (req, res) => {
     res.status(200).json({ success: true, data: appointments });
   } catch (error) {
     console.log("Error in fetching appointments:", error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server Error - Fetching appointments failed",
+      });
   }
 };
 
@@ -41,9 +46,10 @@ export const createAppointments = async (req, res) => {
   ) {
     return res
       .status(400)
-      .json({ success: false, message: "Please provide all fields" });
+      .json({ success: false, message: "Please provide all required fields" });
   }
 
+  // Handle default status and scheduledDate if not provided
   const newAppointment = new Appointment({
     firstName,
     lastName,
@@ -55,8 +61,8 @@ export const createAppointments = async (req, res) => {
     course,
     desiredDate,
     concern,
-    status: status || "Unscheduled", // Default to "Scheduled" for admin-created appointments
-    scheduledDate, // Make sure scheduledDate is passed correctly
+    status: status || "Unscheduled", // Default to "Unscheduled" if no status is provided
+    scheduledDate: scheduledDate || null, // Default to null if no scheduledDate is provided
   });
 
   try {
@@ -64,7 +70,12 @@ export const createAppointments = async (req, res) => {
     res.status(201).json({ success: true, data: newAppointment });
   } catch (error) {
     console.error("Error in creating appointment:", error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server Error - Creating appointment failed",
+      });
   }
 };
 
@@ -82,16 +93,20 @@ export const deleteAppointments = async (req, res) => {
     await Appointment.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Appointment Deleted" });
   } catch (error) {
+    console.error("Error in deleting appointment:", error.message);
     res
       .status(500)
-      .json({ success: false, message: "Error in deleting appointment" });
+      .json({
+        success: false,
+        message: "Server Error - Deleting appointment failed",
+      });
   }
 };
 
 // Update appointment details
 export const updateAppointments = async (req, res) => {
   const { id } = req.params;
-  const appointment = req.body;
+  const updatedData = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -99,22 +114,46 @@ export const updateAppointments = async (req, res) => {
       .json({ success: false, message: "Appointment Not Found" });
   }
 
+  // Ensure required fields are provided for updates
+  const { status, scheduledDate } = updatedData;
+  if (status && !["Scheduled", "Unscheduled"].includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid status value. Must be 'Scheduled' or 'Unscheduled'",
+    });
+  }
+
+  if (status === "Scheduled" && !scheduledDate) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Scheduled date must be provided for 'Scheduled' status",
+      });
+  }
+
   try {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
-      appointment,
+      updatedData,
       { new: true }
     );
     res.status(200).json({ success: true, data: updatedAppointment });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error("Error in updating appointment:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server Error - Updating appointment failed",
+      });
   }
 };
 
 // Update appointment status
 export const updateAppointmentStatus = async (req, res) => {
   const { id } = req.params;
-  const { status, scheduledDate } = req.body; // Expect `scheduledDate` instead of `date`
+  const { status, scheduledDate } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -129,15 +168,28 @@ export const updateAppointmentStatus = async (req, res) => {
     });
   }
 
+  // Validate status value
+  if (!["Scheduled", "Unscheduled"].includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid status value. Must be 'Scheduled' or 'Unscheduled'",
+    });
+  }
+
   try {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       id,
-      { status, scheduledDate }, // Only update `scheduledDate` and `status`
+      { status, scheduledDate },
       { new: true }
     );
     res.status(200).json({ success: true, data: updatedAppointment });
   } catch (error) {
     console.error("Error updating appointment status:", error.message);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server Error - Updating appointment status failed",
+      });
   }
 };
