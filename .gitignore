@@ -1,1 +1,48 @@
-node_modules
+# Node.js
+node_modules/
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Runtime files
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented files
+coverage/
+
+# .env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependency directories
+bower_components/
+
+# VS Code directories
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+.idea/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# npm package lock file (optional, if you're ignoring package-lock.json)
+# package-lock.json
+
+# Build directories
+dist/
+build/
+out/
