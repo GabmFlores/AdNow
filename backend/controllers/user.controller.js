@@ -177,6 +177,11 @@ export const loginUser = async (req, res, next) => {
 };
 
 export const getAuthenticatedUser = async (req, res, next) => {
+  console.log("PRODUCTION AUTH CHECK:");
+  console.log("Session ID:", req.sessionID);
+  console.log("Session:", JSON.stringify(req.session));
+  console.log("Cookies:", req.headers.cookie);
+  console.log("Node Env:", process.env.NODE_ENV);
   const authenticatedUserId = req.session.userId; // Get user ID from the session
 
   console.log("Authenticated User ID from session:", authenticatedUserId); // Log the session ID
