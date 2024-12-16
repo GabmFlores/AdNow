@@ -149,13 +149,13 @@ const Navbar = () => {
       <Box
         as="header"
         bg="white"
-        px={8}
+        px={{ base: 4, md: 8 }} // Adjust padding for responsiveness
         py={4}
         boxShadow="sm"
         borderBottom="1px solid"
         borderColor="gray.200"
       >
-        <Flex alignItems="center">
+        <Flex alignItems="center" justifyContent="space-between" wrap="wrap">
           {/* Logo Section */}
           <HStack spacing={2}>
             <Link as={RouterLink} to="/" _hover={{ textDecoration: "none" }}>
@@ -177,11 +177,13 @@ const Navbar = () => {
           {/* Navbar Links */}
           <HStack
             as="nav"
-            spacing={12}
-            ml={700}
+            spacing={8}
+            ml={{ base: 0, md: 12 }} // Adjust the margin for small screens
             fontWeight="medium"
             fontSize="lg"
             color="gray.600"
+            wrap="wrap"
+            display={{ base: "none", md: "flex" }} // Hide on mobile
           >
             <Link
               as={RouterLink}
@@ -231,14 +233,33 @@ const Navbar = () => {
 
           {/* Log In Button or Logout if authenticated */}
           {authenticatedUser ? (
-            <Button colorScheme="blue" variant="solid" onClick={handleLogout}>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={handleLogout}
+              display={{ base: "none", md: "block" }} // Hide on mobile
+            >
               Log Out
             </Button>
           ) : (
-            <Button colorScheme="blue" variant="solid" onClick={onOpen}>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={onOpen}
+              display={{ base: "none", md: "block" }} // Hide on mobile
+            >
               Log In
             </Button>
           )}
+
+          {/* Mobile Menu Button */}
+          <Button
+            display={{ base: "block", md: "none" }} // Show on mobile
+            onClick={onOpen}
+            colorScheme="blue"
+          >
+            Menu
+          </Button>
         </Flex>
       </Box>
 
