@@ -33,8 +33,16 @@ const FullNewsPage = () => {
 
   return (
     <Box p={6} maxW="800px" mx="auto">
-      {/* Back button at the top */}
-      <Flex align="center" mb={4}>
+      {/* Back button at the top, make it sticky */}
+      <Flex
+        align="center"
+        mb={4}
+        position="sticky"
+        top="0"
+        zIndex="10"
+        bg="white"
+        p={4}
+      >
         <IconButton
           icon={<ChevronLeftIcon />}
           onClick={() => navigate(-1)} // Go back in history

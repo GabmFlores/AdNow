@@ -502,23 +502,29 @@ const AppointPage = () => {
 
           <FormControl isInvalid={!!errors.desiredDate}>
             <FormLabel>Date and Time</FormLabel>
-            <DatePicker
-              selected={
-                newAppointment.desiredDate
-                  ? new Date(newAppointment.desiredDate)
-                  : null
-              }
-              onChange={(date) =>
-                setNewAppointment({
-                  ...newAppointment,
-                  desiredDate: date.toISOString(),
-                })
-              }
-              showTimeSelect
-              dateFormat="yy/MM/dd HH:mm"
-              placeholderText="yy/mm/dd hh:mm"
-              className="react-datepicker-custom-input"
-            />
+            <Box
+              w="full" // Make sure it takes up full width on all screen sizes
+              position="relative" // Ensures that the datepicker stays in place
+            >
+              <DatePicker
+                selected={
+                  newAppointment.desiredDate
+                    ? new Date(newAppointment.desiredDate)
+                    : null
+                }
+                onChange={(date) =>
+                  setNewAppointment({
+                    ...newAppointment,
+                    desiredDate: date.toISOString(),
+                  })
+                }
+                showTimeSelect
+                dateFormat="yy/MM/dd HH:mm"
+                placeholderText="yy/mm/dd hh:mm"
+                className="react-datepicker-custom-input"
+                wrapperClassName="custom-datepicker-wrapper"
+              />
+            </Box>
             {errors.desiredDate && (
               <FormHelperText color="red.500">
                 {errors.desiredDate}
