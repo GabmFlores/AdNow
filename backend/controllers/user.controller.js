@@ -108,10 +108,25 @@ export const updateUser = async (req, res) => {
   }
 
   try {
+    // If password is included in the request, hash it before updating the user
+    if (userData.password) {
+      const saltRounds = 10; // You can adjust the salt rounds for more security
+      userData.password = await bcrypt.hash(userData.password, saltRounds);
+    }
+
+    // Update user data
     const updatedUser = await User.findByIdAndUpdate(id, userData, {
       new: true,
-      select: "+email +password", // Include `select: false` fields if needed
+      select: "+email +password", // Include password and email if needed
     });
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found or could not be updated",
+      });
+    }
+
     res.status(200).json({ success: true, data: updatedUser });
   } catch (error) {
     console.error("Error in updating user:", error.message);
@@ -240,4 +255,40 @@ export const logoutUser = (req, res) => {
       .status(200)
       .json({ success: true, message: "User logged out successfully" });
   });
+};
+
+export const getPasswordById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "User Not Found" });
+  }
+
+  try {
+    // Find the user by their ID and explicitly include the password field
+    const user = await User.findById(id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+
+    // Send back the user data along with the password (for authorized access)
+    res.status(200).json({
+      success: true,
+      data: {
+        username: user.username,
+        email: user.email,
+        password: user.password, // Returning the password explicitly
+      },
+    });
+  } catch (error) {
+    console.error("Error in fetching user password:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };

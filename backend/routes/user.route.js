@@ -8,6 +8,7 @@ import {
   logoutUser,
   updateUser,
   getAuthenticatedUser,
+  getPasswordById,
 } from "../controllers/user.controller.js";
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 // Define routes for user operations
 router.get("/", getUsers); // Fetch all users
 router.get("/auth", getAuthenticatedUser);
+router.get("/password/:id", getPasswordById);
 router.get("/:id", getUsersById); // Fetch all users
 router.post("/logout", logoutUser); // logout user
 router.post("/", createUser);

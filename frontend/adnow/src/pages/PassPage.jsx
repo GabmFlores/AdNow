@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import {
   Box,
@@ -15,9 +14,11 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import SettingsSide from "../components/SettingsSide";
+import { useUsers } from "../store/User"; // Import the Zustand store
 
 const PasswordPage = () => {
   const toast = useToast();
+  const { authenticatedUser, updateUser } = useUsers(); // Destructure from Zustand
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -64,15 +65,40 @@ const PasswordPage = () => {
       return;
     }
 
-    try {
-      // Simulate API call
+    if (!authenticatedUser) {
       toast({
-        title: "Password Updated",
-        description: "Your password has been successfully updated.",
-        status: "success",
+        title: "User Not Authenticated",
+        description: "Please log in first to update your password.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
+      return;
+    }
+
+    try {
+      // Call the updateUser function from Zustand to update the password
+      const result = await updateUser(authenticatedUser._id, {
+        password: newPassword,
+      });
+
+      if (result.success) {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been successfully updated.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update password.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
