@@ -234,8 +234,6 @@ const Navbar = () => {
             </Link>
           </HStack>
 
-          <Spacer />
-
           {/* Log In Button or Logout if authenticated */}
           {authenticatedUser ? (
             <Button
@@ -243,6 +241,7 @@ const Navbar = () => {
               variant="solid"
               onClick={handleLogout}
               display={{ base: "none", md: "block" }} // Hide on mobile
+              ml={4}
             >
               Log Out
             </Button>
@@ -252,6 +251,7 @@ const Navbar = () => {
               variant="solid"
               onClick={onOpen}
               display={{ base: "none", md: "block" }} // Hide on mobile
+              ml={4}
             >
               Log In
             </Button>

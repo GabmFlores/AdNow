@@ -26,16 +26,18 @@ function AdminSideNavbar() {
 
   // Function to check if the current route matches the link
   const isActive = (path) =>
-    location.pathname.startsWith(path) ? { bg: "gray.200" } : {};
+    location.pathname.startsWith(path)
+      ? { bg: "gray.100", padding: "10px" }
+      : {}; // Added padding for consistency
 
   return (
     <Box
       bg="white"
-      w="80px"
+      w={{ base: "60px", sm: "80px" }} // Set dynamic width for responsiveness
       position="fixed"
       top="20%"
-      height="60%"
       left="0"
+      height="auto" // Adjust height based on content
       boxShadow="lg"
       display="flex"
       alignItems="center"
@@ -44,6 +46,7 @@ function AdminSideNavbar() {
       border="2px solid #e2e8f0"
       zIndex="9"
       borderRadius="0px 50px 50px 0px" // Rounded left corners
+      padding={{ base: "1rem", sm: "1.5rem" }} // Adjust padding for smaller screens
     >
       <VStack spacing={6}>
         {/* Home Button */}
@@ -54,8 +57,7 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
-              p={2}
-              borderRadius="md" // Ensure all items have consistent radius
+              borderRadius="md"
               _hover={{ bg: "gray.100" }} // Hover effect
               {...isActive("/home")} // Apply active styles
             >
@@ -63,10 +65,10 @@ function AdminSideNavbar() {
                 aria-label="Home"
                 icon={<FaHome />}
                 variant="ghost"
-                size="2xl"
+                size="lg" // Adjust the icon size to ensure it's not too large
                 width="60px"
                 height="60px"
-                fontSize="25px"
+                fontSize="lg" // Adjust font size to be responsive
               />
             </Box>
           </Link>
@@ -81,7 +83,6 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
-              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
               {...isActive("/inbox")}
@@ -90,10 +91,10 @@ function AdminSideNavbar() {
                 aria-label="Inbox"
                 icon={<FaInbox />}
                 variant="ghost"
-                size="2xl"
+                size="lg"
                 width="60px"
                 height="60px"
-                fontSize="25px"
+                fontSize="lg"
               />
               {/* Conditionally render the red circle indicator */}
               {unscheduledCount > 0 && (
@@ -121,7 +122,6 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
-              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
               {...isActive("/columns")} // Apply active styles
@@ -130,10 +130,10 @@ function AdminSideNavbar() {
                 aria-label="News Column"
                 icon={<FaNewspaper />}
                 variant="ghost"
-                size="2xl"
+                size="lg"
                 width="60px"
                 height="60px"
-                fontSize="25px"
+                fontSize="lg"
               />
             </Box>
           </Link>
@@ -147,7 +147,6 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
-              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
               {...isActive("/files")} // Apply active styles
@@ -156,10 +155,10 @@ function AdminSideNavbar() {
                 aria-label="File"
                 icon={<FaFileAlt />}
                 variant="ghost"
-                size="2xl"
+                size="lg"
                 width="60px"
                 height="60px"
-                fontSize="25px"
+                fontSize="lg"
               />
             </Box>
           </Link>
@@ -173,7 +172,6 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
-              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
               {...isActive("/settings")} // Apply active styles
@@ -182,10 +180,10 @@ function AdminSideNavbar() {
                 aria-label="Settings"
                 icon={<FaCog />}
                 variant="ghost"
-                size="2xl"
+                size="lg"
                 width="60px"
                 height="60px"
-                fontSize="25px"
+                fontSize="lg"
               />
             </Box>
           </Link>
