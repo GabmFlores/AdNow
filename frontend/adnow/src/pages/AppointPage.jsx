@@ -271,7 +271,7 @@ const AppointPage = () => {
       justifyContent="center"
     >
       <Box
-        w={{ base: "90%", md: "60%" }}
+        w={{ base: "90%", md: "60%", lg: "50%" }}
         bg="white"
         p={8}
         borderRadius="lg"
@@ -295,7 +295,7 @@ const AppointPage = () => {
         </Heading>
 
         <VStack spacing={6} align="stretch">
-          <HStack spacing={4} align="flex-start">
+          <HStack spacing={4} align="flex-start" wrap="wrap">
             <FormControl flex={1} isInvalid={!!errors.lastName}>
               <FormLabel>Last Name</FormLabel>
               <Input
