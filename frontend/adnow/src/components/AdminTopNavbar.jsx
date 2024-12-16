@@ -44,7 +44,7 @@ function AdminTopNavbar() {
 
   // Function to check if the current path matches the link
   const isActive = (path) =>
-    location.pathname.startsWith(path) ? { bg: "gray.200" } : {}; // Matches paths that start with 'path'
+    location.pathname.startsWith(path) ? { bg: "blue.200" } : {}; // Matches paths that start with 'path'
 
   return (
     <Box

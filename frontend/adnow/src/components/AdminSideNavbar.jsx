@@ -26,9 +26,7 @@ function AdminSideNavbar() {
 
   // Function to check if the current route matches the link
   const isActive = (path) =>
-    location.pathname.startsWith(path)
-      ? { bg: "gray.100", padding: "10px" }
-      : {}; // Added padding for consistency
+    location.pathname.startsWith(path) ? { bg: "blue.200" } : {}; // Lighter active state to blend better
 
   return (
     <Box
@@ -57,9 +55,9 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
+              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }} // Hover effect
-              {...isActive("/home")} // Apply active styles
             >
               <IconButton
                 aria-label="Home"
@@ -69,6 +67,7 @@ function AdminSideNavbar() {
                 width="60px"
                 height="60px"
                 fontSize="lg" // Adjust font size to be responsive
+                {...isActive("/home")}
               />
             </Box>
           </Link>
@@ -83,9 +82,9 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
+              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
-              {...isActive("/inbox")}
             >
               <IconButton
                 aria-label="Inbox"
@@ -95,6 +94,7 @@ function AdminSideNavbar() {
                 width="60px"
                 height="60px"
                 fontSize="lg"
+                {...isActive("/inbox")}
               />
               {/* Conditionally render the red circle indicator */}
               {unscheduledCount > 0 && (
@@ -122,9 +122,9 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
+              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
-              {...isActive("/columns")} // Apply active styles
             >
               <IconButton
                 aria-label="News Column"
@@ -134,6 +134,7 @@ function AdminSideNavbar() {
                 width="60px"
                 height="60px"
                 fontSize="lg"
+                {...isActive("/columns")}
               />
             </Box>
           </Link>
@@ -147,9 +148,9 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
+              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
-              {...isActive("/files")} // Apply active styles
             >
               <IconButton
                 aria-label="File"
@@ -159,6 +160,7 @@ function AdminSideNavbar() {
                 width="60px"
                 height="60px"
                 fontSize="lg"
+                {...isActive("/files")}
               />
             </Box>
           </Link>
@@ -172,9 +174,9 @@ function AdminSideNavbar() {
               alignItems="center"
               w="100%"
               cursor="pointer"
+              p={2}
               borderRadius="md"
               _hover={{ bg: "gray.100" }}
-              {...isActive("/settings")} // Apply active styles
             >
               <IconButton
                 aria-label="Settings"
@@ -184,6 +186,7 @@ function AdminSideNavbar() {
                 width="60px"
                 height="60px"
                 fontSize="lg"
+                {...isActive("/settings")}
               />
             </Box>
           </Link>
