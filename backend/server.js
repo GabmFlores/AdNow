@@ -22,6 +22,8 @@ const corsOptions = {
       ? process.env.FRONTEND_URL
       : "http://localhost:5173", // Use the production URL only in production, otherwise fallback to localhost
   credentials: true, // Allow cookies and authentication
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
 };
 
 app.use(cors(corsOptions));
