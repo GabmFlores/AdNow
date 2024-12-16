@@ -15,6 +15,8 @@ dotenv.config();
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 // CORS Setup
 const corsOptions = {
   origin:
@@ -46,6 +48,12 @@ app.use(
     },
   })
 );
+
+app.use((req, res, next) => {
+  console.log("Session:", req.session);
+  console.log("Cookies:", req.cookies);
+  next();
+});
 
 // Middleware for JSON parsing
 app.use(express.json());

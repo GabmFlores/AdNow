@@ -15,6 +15,7 @@ const PrivateRoute = ({ children, redirectTo = "/" }) => {
           credentials: "include", // Important for cookies
         });
         const data = await response.json();
+        console.log("Auth Response:", data);
 
         if (data.success) {
           setAuthenticated(true);

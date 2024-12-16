@@ -122,6 +122,7 @@ export const updateUser = async (req, res) => {
 export const loginUser = async (req, res, next) => {
   const { username, password } = req.body;
 
+  console.log("Login Attempt:", req.body);
   try {
     // Check if parameters are missing
     if (!username || !password) {
@@ -154,7 +155,7 @@ export const loginUser = async (req, res, next) => {
         message: "Invalid credentials",
       });
     }
-
+    console.log("Session After Login:", req.session);
     // Store user ID in session
     req.session.userId = user._id;
 
