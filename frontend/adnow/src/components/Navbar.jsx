@@ -20,9 +20,16 @@ import {
   InputRightElement,
   useToast,
   ModalFooter,
+  IconButton,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
 } from "@chakra-ui/react";
 import { useLocation, Link as RouterLink } from "react-router-dom";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ViewIcon, ViewOffIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useUsers } from "../store/User"; // Import useUsers hook from Zustand
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 
@@ -36,8 +43,6 @@ const Navbar = () => {
     onClose: onConfirmClose,
   } = useDisclosure();
   const toast = useToast(); // Initialize useToast hook
-
-  // Zustand store functions
   const { authenticatedUser, loginUser, createUser, logoutUser } = useUsers();
 
   const [isRegistering, setIsRegistering] = useState(false);
@@ -46,6 +51,7 @@ const Navbar = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [invitationCode, setInvitationCode] = useState(""); // For registration
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     // If user is already logged in, we can fetch their details from the Zustand store
@@ -54,7 +60,6 @@ const Navbar = () => {
   const toggleModal = () => setIsRegistering(!isRegistering);
   const togglePassword = () => setShowPassword(!showPassword);
 
-  // Function to handle pressing "Enter" key
   const handleKeyPress = (e, action) => {
     if (e.key === "Enter") {
       action();
@@ -252,16 +257,81 @@ const Navbar = () => {
             </Button>
           )}
 
-          {/* Mobile Menu Button */}
-          <Button
+          {/* Hamburger Button (Mobile Menu) */}
+          <IconButton
+            aria-label="Open Menu"
+            icon={<HamburgerIcon />}
             display={{ base: "block", md: "none" }} // Show on mobile
-            onClick={onOpen}
-            colorScheme="blue"
-          >
-            Menu
-          </Button>
+            onClick={() => setDrawerOpen(true)}
+          />
         </Flex>
       </Box>
+
+      {/* Mobile Drawer Menu */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        placement="right"
+        onClose={() => setDrawerOpen(false)}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+            <Text fontSize="xl" fontWeight="bold">
+              Menu
+            </Text>
+          </DrawerHeader>
+          <DrawerBody>
+            <VStack spacing={4}>
+              <Link as={RouterLink} to="/" onClick={() => setDrawerOpen(false)}>
+                Home
+              </Link>
+              <Link
+                as={RouterLink}
+                to="/appointments"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Appointment
+              </Link>
+              <Link
+                as={RouterLink}
+                to="/news"
+                onClick={() => setDrawerOpen(false)}
+              >
+                News
+              </Link>
+              <Link
+                as={RouterLink}
+                to="/contact"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Contact Us
+              </Link>
+              <Spacer />
+              {/* Log In Button or Logout if authenticated */}
+              {authenticatedUser ? (
+                <Button
+                  colorScheme="blue"
+                  variant="solid"
+                  onClick={handleLogout}
+                  width="full"
+                >
+                  Log Out
+                </Button>
+              ) : (
+                <Button
+                  colorScheme="blue"
+                  variant="solid"
+                  onClick={onOpen}
+                  width="full"
+                >
+                  Log In
+                </Button>
+              )}
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
 
       {/* Modal for Login/Signup */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -274,7 +344,6 @@ const Navbar = () => {
           <ModalBody>
             <VStack spacing={4}>
               {!isRegistering ? (
-                // Login Form
                 <>
                   <Text fontSize="sm" color="gray.500">
                     Remember, your username is case-sensitive.
@@ -325,7 +394,6 @@ const Navbar = () => {
                   </Text>
                 </>
               ) : (
-                // Register Form
                 <>
                   <Input
                     placeholder="Enter username"
