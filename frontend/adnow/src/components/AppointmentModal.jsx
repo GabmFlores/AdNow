@@ -29,7 +29,7 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
     firstName: "",
     middleName: "",
     lastName: "",
-    idNumber: "",
+    idNum: "",
     sex: "",
     concern: "",
     desiredDate: "",
@@ -47,7 +47,7 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
         firstName: appointment.firstName || "",
         middleName: appointment.middleName || "",
         lastName: appointment.lastName || "",
-        idNumber: appointment.idNumber || "",
+        idNum: appointment.idNum || "",
         sex: appointment.sex || "",
         concern: appointment.concern || "",
         desiredDate: formatDateForInput(appointment.desiredDate) || "",
@@ -203,8 +203,8 @@ const AppointmentModal = ({ isOpen, onClose, appointment }) => {
                 <FormControl flex={2}>
                   <FormLabel>ID Number</FormLabel>
                   <Input
-                    name="idNumber"
-                    value={formData.idNumber}
+                    name="idNum"
+                    value={formData.idNum}
                     onChange={handleChange}
                   />
                 </FormControl>
@@ -329,7 +329,7 @@ AppointmentModal.propTypes = {
     firstName: PropTypes.string,
     middleName: PropTypes.string,
     lastName: PropTypes.string,
-    idNumber: PropTypes.string,
+    idNum: PropTypes.string,
     sex: PropTypes.string,
     concern: PropTypes.string,
     desiredDate: PropTypes.string,
