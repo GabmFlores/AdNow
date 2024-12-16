@@ -296,7 +296,10 @@ const AppointPage = () => {
 
         <VStack spacing={6} align="stretch">
           <HStack spacing={4} align="flex-start" wrap="wrap">
-            <FormControl flex={1} isInvalid={!!errors.lastName}>
+            <FormControl
+              flex={{ base: "1 0 100%", md: "1" }}
+              isInvalid={!!errors.lastName}
+            >
               <FormLabel>Last Name</FormLabel>
               <Input
                 placeholder="Enter last name"
@@ -314,7 +317,11 @@ const AppointPage = () => {
                 </FormHelperText>
               )}
             </FormControl>
-            <FormControl flex={1} isInvalid={!!errors.firstName}>
+
+            <FormControl
+              flex={{ base: "1 0 100%", md: "1" }}
+              isInvalid={!!errors.firstName}
+            >
               <FormLabel>First Name</FormLabel>
               <Input
                 placeholder="Enter first name"
@@ -332,7 +339,13 @@ const AppointPage = () => {
                 </FormHelperText>
               )}
             </FormControl>
-            <FormControl flex={1}>
+          </HStack>
+
+          <HStack spacing={4} align="flex-start" wrap="wrap">
+            <FormControl
+              flex={{ base: "1 0 100%", md: "1" }}
+              isInvalid={!!errors.middleName}
+            >
               <FormLabel>
                 Middle Name{" "}
                 <Text as="span" fontSize="sm" color="gray.500">
@@ -349,6 +362,11 @@ const AppointPage = () => {
                   })
                 }
               />
+              {errors.middleName && (
+                <FormHelperText color="red.500">
+                  {errors.middleName}
+                </FormHelperText>
+              )}
             </FormControl>
           </HStack>
 
@@ -444,7 +462,7 @@ const AppointPage = () => {
 
             <FormControl flex={1} isInvalid={!!errors.course}>
               <FormLabel>
-                Program or Course{" "}
+                Course{" "}
                 <Text as="span" fontSize="sm" color="gray.500">
                   (Optional)
                 </Text>
