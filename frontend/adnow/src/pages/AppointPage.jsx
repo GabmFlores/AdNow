@@ -40,7 +40,6 @@ const departmentCourseMap = {
     "BS BA major in Marketing Management",
   ],
   "COLLEGE OF COMPUTER STUDIES": [
-    "BS Computer Engineering",
     "BS Computer Science",
     "BS Digital Illustration and Animation",
     "BS Information Systems",
