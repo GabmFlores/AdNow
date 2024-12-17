@@ -38,7 +38,7 @@ const patientSchema = new mongoose.Schema(
     },
     image: {
       type: String, // URL-based image
-      default: "",
+      default: "https://example.com/image1.jpg",
     },
     idNum: {
       type: Number,
